@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,8 +15,6 @@ mybatis:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-aliases-package: com.gong.entity
 
-
-# 自定义配置
 my-config:
   dir-name: D:/resource/
   base-url: http://localhost:8080/
