@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gong.mapper.UserMapper">
+    <!-- 更新所有字段，动态if   -->
+    <update id="updateById">
+        UPDATE user
+        <set>
+            <if test="nickname != null">
+                nickname = #{nickname},
+            </if>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="mail != null">
+                mail = #{mail},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="role != null">
+                role = #{role},
+            </if>
+            <if test="signature != null">
+                signature = #{signature},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="deleted != null">
+                deleted = #{deleted},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime}
+            </if>
+        </set>
+        where id = #{id} and deleted = 0
+
+    </update>
+
+    <!-- 通过id 查询-->
+    <select id="selectById" resultType="com.gong.entity.User">
+        select id, nickname, username, password, gender, image, mail, phone, role, signature, status, deleted, create_time, update_time from user
+            where id = #{id} and deleted = 0
+    </select>
+
+    <select id="selectByUsernameAndPassword" resultType="com.gong.entity.User">
+        select id, nickname, username, password, gender, image, mail, phone, role, signature, status, deleted, create_time, update_time
+            from user where username = #{username} and password = #{password} and deleted = 0
+    </select>
+
+    <!-- 插入必须字段-->
+    <insert id="insertRequired">
+<!--        insert into user(nickname, username, password, gender, image, mail, phone, role, signature, status, deleted)-->
+<!--            values(#{nickname}, #{username}, #{password}, #{gender}, #{image}, #{mail}, #{phone}, #{role}, #{signature}, #{status}, #{deleted})-->
+        insert into user(nickname, username, password) values(#{nickname}, #{username}, #{password})
+    </insert>
+
+
+</mapper>

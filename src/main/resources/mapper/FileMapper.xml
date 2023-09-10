@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gong.mapper.FileMapper">
+
+    <delete id="deleteById">
+        delete from files where id = #{id};
+    </delete>
+
+    <select id="selectById" resultType="FileEntity">
+        SELECT id, file_name, type, size, md5, url, deleted, status, create_time, update_time from files
+            where id = #{id}} and deleted = 0
+    </select>
+
+    <select id="selectByMd5" resultType="FileEntity">
+        select id, file_name, type, size, md5, url, deleted, status, create_time, update_time from files
+            where md5 = #{md5} and deleted = 0
+    </select>
+
+    <select id="selectByFileName" resultType="FileEntity">
+        select id, file_name, type, size, md5, url, deleted, status, create_time, update_time from files
+            where file_name = #{fileName} and deleted = 0
+    </select>
+
+    <insert id="insert">
+        INSERT INTO files(file_name, type, size, md5, url)
+            VALUES(#{fileName}, #{type}, #{size}, #{md5}, #{url})
+    </insert>
+</mapper>
