@@ -2,6 +2,7 @@ package com.gong.service;
 
 
 import com.gong.entity.BaseUserInfo;
+import com.gong.entity.LoginFrom;
 import com.gong.entity.User;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,5 @@ public interface UserService {
 
     int updatePwdById(int id, String password);
 
-    int register(User user);
+    int register(LoginFrom from);
 }

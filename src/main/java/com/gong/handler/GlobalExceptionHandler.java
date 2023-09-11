@@ -2,6 +2,7 @@ package com.gong.handler;
 
 import com.gong.common.ResponseStatus;
 import com.gong.entity.Result;
+import com.gong.exception.ExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -55,7 +56,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public Result<String> Violation(Exception ex) {
         log.warn(ex.getMessage());
-        return Result.error(ResponseStatus.WARN, "约束冲突");
+        return Result.error(ResponseStatus.WARN, "字段冲突");
+    }
+
+
+    /**
+     * 字段已存在
+     */
+    @ExceptionHandler(ExistException.class)
+    public Result existException(ExistException ex) {
+        log.warn(ex.getMessage());
+        return Result.error(ResponseStatus.CONFLICT, ex.getMessage());
     }
 
 }

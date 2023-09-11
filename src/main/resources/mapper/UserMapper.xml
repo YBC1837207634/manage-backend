@@ -19,8 +19,8 @@
             <if test="gender != null">
                 gender = #{gender},
             </if>
-            <if test="image != null">
-                image = #{image},
+            <if test="avatar != null">
+                avatar = #{avatar},
             </if>
             <if test="mail != null">
                 mail = #{mail},
@@ -50,21 +50,50 @@
 
     <!-- 通过id 查询-->
     <select id="selectById" resultType="com.gong.entity.User">
-        select id, nickname, username, password, gender, image, mail, phone, role, signature, status, deleted, create_time, update_time from user
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
             where id = #{id} and deleted = 0
     </select>
 
     <select id="selectByUsernameAndPassword" resultType="com.gong.entity.User">
-        select id, nickname, username, password, gender, image, mail, phone, role, signature, status, deleted, create_time, update_time
-            from user where username = #{username} and password = #{password} and deleted = 0
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
+            where username = #{username} and password = #{password} and deleted = 0
     </select>
 
-    <!-- 插入必须字段-->
-    <insert id="insertRequired">
-<!--        insert into user(nickname, username, password, gender, image, mail, phone, role, signature, status, deleted)-->
-<!--            values(#{nickname}, #{username}, #{password}, #{gender}, #{image}, #{mail}, #{phone}, #{role}, #{signature}, #{status}, #{deleted})-->
-        insert into user(nickname, username, password) values(#{nickname}, #{username}, #{password})
-    </insert>
+    <select id="selectByUsername" resultType="com.gong.entity.User">
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
+            where username = #{username} and deleted = 0
+    </select>
 
+    <!-- 在<insert>标签中使用动态SQL -->
+    <insert id="insert" parameterType="com.gong.entity.User">
+        INSERT INTO user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">nickname,</if>
+            <if test="username != null">username,</if>
+            <if test="password != null">password,</if>
+            <if test="gender != null">gender,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="mail != null">mail</if>
+            <if test="phone != null">phone,</if>
+            <if test="role != null">role,</if>
+            <if test="signature != null">signature,</if>
+            <if test="status != null">status,</if>
+            <if test="deleted != null">deleted,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="nickname != null">#{nickname},</if>
+            <if test="username != null">#{username},</if>
+            <if test="password != null">#{password},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="mail != null">#{mail}</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="role != null">#{role},</if>
+            <if test="signature != null">#{signature},</if>
+            <if test="status != null">#{status},</if>
+            <if test="deleted != null">#{deleted},</if>
+
+        </trim>
+    </insert>
 
 </mapper>

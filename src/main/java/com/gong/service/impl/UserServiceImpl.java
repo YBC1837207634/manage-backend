@@ -1,7 +1,9 @@
 package com.gong.service.impl;
 
 import com.gong.entity.BaseUserInfo;
+import com.gong.entity.LoginFrom;
 import com.gong.entity.User;
+import com.gong.exception.ExistException;
 import com.gong.mapper.UserMapper;
 import com.gong.service.UserService;
 import org.springframework.beans.BeanUtils;
@@ -71,18 +73,24 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 注册账号
-     * @param user
+     * @param form
      * @return
      */
     @Override
-    public int register(User user) {
-        user.setRole(null);
-        if (StringUtils.hasText(user.getUsername())
-                && StringUtils.hasText(user.getPassword())
-                && user.getUsername().length() <= 30
-                && user.getPassword().length() <= 30
-        ) {
-            return userMapper.insertRequired(user);
+    public int register(LoginFrom form) {
+        if (StringUtils.hasText(form.getUsername())
+            && StringUtils.hasText(form.getPassword())
+            && form.getUsername().length() <= 30
+            && form.getPassword().length() <= 30 ) {
+            User res = userMapper.selectByUsername(form.getUsername());
+            if (res != null) throw new ExistException("用户已存在");
+            // 不存在就注册
+            User user = new User();
+            user.setUsername(form.getUsername());
+            user.setPassword(form.getPassword());
+            // 默认的昵称就是用户名
+            user.setNickname(form.getUsername());
+            return userMapper.insert(user);
         }
         return 0;
     }

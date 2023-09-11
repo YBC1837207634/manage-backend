@@ -44,8 +44,8 @@ public class LoginController {
      * /register 注册
      */
     @PostMapping("/register")
-    public Result<String> register(@RequestBody User user) {
-        if (userService.register(user) != 0) {
+    public Result<String> register(@RequestBody LoginFrom from) {
+        if (userService.register(from) != 0) {
             return Result.success("注册成功！");
         }
         return Result.error(ResponseStatus.WARN,"注册失败");
