@@ -3,6 +3,8 @@ package com.gong.controller;
 import com.gong.common.BaseContent;
 import com.gong.common.ResponseStatus;
 import com.gong.entity.*;
+import com.gong.service.RoleService;
+import com.gong.service.SysMenuService;
 import com.gong.service.UserService;
 import com.gong.utils.JWTUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +13,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class LoginController {
 
     private UserService userService;
 
+    private SysMenuService sysMenuService;
+
+    private RoleService roleService;
+
     @Autowired
-    public LoginController(UserService userService) {
+    public LoginController(UserService userService, SysMenuService sysMenuService, RoleService roleService) {
         this.userService = userService;
+        this.sysMenuService = sysMenuService;
+        this.roleService = roleService;
     }
 
     /**
@@ -28,7 +38,6 @@ public class LoginController {
      */
     @PostMapping("/login")
     public AuthResult login(@RequestBody LoginFrom from) {
-
         User u = userService.isLogin(from.getUsername(), from.getPassword());
         if (u == null) {
             return AuthResult.error(ResponseStatus.WARN, "登陆失败：账号或密码错误！");
@@ -56,7 +65,19 @@ public class LoginController {
      */
     @GetMapping("/getInfo")
     public Result<User> getInfo() {
-        User user = userService.getById(BaseContent.get());
+        User user = userService.getById(BaseContent.getId());
         return Result.success(user);
     }
+
+    /**
+     * 获取用户权限路由
+     * @return
+     */
+    @GetMapping("/getRouter")
+    public Result<List<Route>> getRouter() {
+        List<SysMenu> menus = sysMenuService.getByPower(BaseContent.getPower());
+        List<Route> routes = sysMenuService.getChildrenList(menus, 0);
+        return Result.success(routes);
+    }
+
 }

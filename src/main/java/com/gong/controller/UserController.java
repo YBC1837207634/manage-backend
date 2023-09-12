@@ -26,7 +26,7 @@ public class UserController {
      */
     @PutMapping("/space")
     public Result<String> update(@RequestBody BaseUserInfo from) {
-        from.setId(BaseContent.get());  // 确保修改的时当前的用户
+        from.setId(BaseContent.getId());  // 确保修改的时当前的用户
         if (userService.updateBaseUserInfoById(from) != 0) {
             return Result.success("更新成功");
         }
@@ -39,7 +39,7 @@ public class UserController {
      */
     @GetMapping("/space")
     public Result<User> getInfo() {
-        User user = userService.getById(BaseContent.get());
+        User user = userService.getById(BaseContent.getId());
         return Result.success(user);
     }
 
@@ -50,7 +50,7 @@ public class UserController {
      */
     @PutMapping("/updatePwd")
     public Result<String> updatePwd(@RequestBody LoginFrom from) {
-        if (userService.updatePwdById(BaseContent.get(), from.getPassword()) != 0) {
+        if (userService.updatePwdById(BaseContent.getId(), from.getPassword()) != 0) {
             return Result.success("修改成功");
         }
         return Result.error(ResponseStatus.NOT_MODIFY, "修改失败！请检查格式");
