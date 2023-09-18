@@ -5,7 +5,9 @@ import com.gong.entity.Result;
 import com.gong.exception.ExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,13 +52,13 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 唯一字段冲突
+     * 数据库 完整性约束
      * @return
      */
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public Result<String> Violation(Exception ex) {
         log.warn(ex.getMessage());
-        return Result.error(ResponseStatus.WARN, "字段冲突");
+        return Result.error(ResponseStatus.ERROR, "操作有误！");
     }
 
 
@@ -64,9 +66,18 @@ public class GlobalExceptionHandler {
      * 字段已存在
      */
     @ExceptionHandler(ExistException.class)
-    public Result existException(ExistException ex) {
+    public Result<String> existException(ExistException ex) {
         log.warn(ex.getMessage());
         return Result.error(ResponseStatus.CONFLICT, ex.getMessage());
     }
 
+    /**
+     * 数据校验出错
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result<String> argument(MethodArgumentNotValidException exception)  {
+        BindingResult bindingResult = exception.getBindingResult();
+        log.warn(bindingResult.getFieldError().toString());
+        return Result.error(ResponseStatus.BAD_REQUEST, bindingResult.getFieldError().getDefaultMessage());
+    }
 }

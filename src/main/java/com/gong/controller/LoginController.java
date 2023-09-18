@@ -3,7 +3,7 @@ package com.gong.controller;
 import com.gong.common.BaseContent;
 import com.gong.common.ResponseStatus;
 import com.gong.entity.*;
-import com.gong.service.RoleService;
+import com.gong.service.RoleMenuService;
 import com.gong.service.SysMenuService;
 import com.gong.service.UserService;
 import com.gong.utils.JWTUtils;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,13 +23,13 @@ public class LoginController {
 
     private SysMenuService sysMenuService;
 
-    private RoleService roleService;
+    private RoleMenuService roleMenuService;
 
     @Autowired
-    public LoginController(UserService userService, SysMenuService sysMenuService, RoleService roleService) {
+    public LoginController(UserService userService, SysMenuService sysMenuService, RoleMenuService roleMenuService) {
         this.userService = userService;
         this.sysMenuService = sysMenuService;
-        this.roleService = roleService;
+        this.roleMenuService = roleMenuService;
     }
 
     /**
@@ -41,13 +42,12 @@ public class LoginController {
         User u = userService.isLogin(from.getUsername(), from.getPassword());
         if (u == null) {
             return AuthResult.error(ResponseStatus.WARN, "登陆失败：账号或密码错误！");
-        } else if (u.getStatus() != 1) {
+        } else if (u.getStatus() == 0) {
             return AuthResult.error(ResponseStatus.WARN, "账号已停用");
         }
         String token = JWTUtils.createToken(u.getId());
         return AuthResult.success("登陆成功！", token);
     }
-
 
     /**
      * /register 注册
@@ -75,9 +75,16 @@ public class LoginController {
      */
     @GetMapping("/getRouter")
     public Result<List<Route>> getRouter() {
-        List<SysMenu> menus = sysMenuService.getByPower(BaseContent.getPower());
-        List<Route> routes = sysMenuService.getChildrenList(menus, 0);
-        return Result.success(routes);
+        List<Route> router;
+        List<String> types = new ArrayList<>();
+        types.add("M");  // 目录
+        types.add("C");  // 菜单
+        if (BaseContent.getRoleName().equals("管理员")) {
+            router = sysMenuService.getRouter(types);
+        } else {
+            List<Integer> ids = roleMenuService.getMenuIdByRoleId(BaseContent.getRoleId());
+            router = sysMenuService.getRouter(types, ids);
+        }
+        return Result.success(router);
     }
-
 }

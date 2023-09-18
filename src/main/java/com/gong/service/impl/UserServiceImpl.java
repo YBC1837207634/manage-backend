@@ -2,6 +2,7 @@ package com.gong.service.impl;
 
 import com.gong.entity.BaseUserInfo;
 import com.gong.entity.LoginFrom;
+import com.gong.entity.Pages;
 import com.gong.entity.User;
 import com.gong.exception.ExistException;
 import com.gong.mapper.UserMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,6 +40,24 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectById(id);
     }
 
+    @Override
+    public int count() {
+        return userMapper.count();
+    }
+
+    /**
+     * 分页查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public Pages<User> pages(int page, int pageSize) {
+        List<User> limit = userMapper.limit((page - 1) * pageSize, pageSize);
+        int total = userMapper.count();
+        return new Pages<>(total, limit.size(), page, pageSize, limit);
+    }
+
     /**
      * 通过 id 来更新用户的基本信息
      * @param from
@@ -50,6 +70,16 @@ public class UserServiceImpl implements UserService {
             "username","password","role","status", "deleted", "createTime", "updateTime"
         );
         user.setUpdateTime(LocalDateTime.now());
+        return userMapper.updateById(user);
+    }
+
+    /**
+     * 修改用户所有信息 （需要权限）
+     * @param user
+     * @return
+     */
+    @Override
+    public int updateUserById(User user) {
         return userMapper.updateById(user);
     }
 

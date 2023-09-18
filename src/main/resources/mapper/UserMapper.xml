@@ -50,19 +50,27 @@
 
     <!-- 通过id 查询-->
     <select id="selectById" resultType="com.gong.entity.User">
-        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time FROM user
             where id = #{id} and deleted = 0
     </select>
 
     <select id="selectByUsernameAndPassword" resultType="com.gong.entity.User">
-        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time FROM user
             where username = #{username} and password = #{password} and deleted = 0
     </select>
 
     <select id="selectByUsername" resultType="com.gong.entity.User">
-        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time from user
+        select id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time FROM user
             where username = #{username} and deleted = 0
     </select>
+    <select id="limit" resultType="com.gong.entity.User">
+        SELECT id, nickname, username, password, gender, avatar, mail, phone, role, signature, status, deleted, create_time, update_time FROM user
+            WHERE deleted = 0 LIMIT #{start}, #{total}
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT count(*) FROM user
+    </select>
+
 
     <!-- 在<insert>标签中使用动态SQL -->
     <insert id="insert" parameterType="com.gong.entity.User">
@@ -92,7 +100,6 @@
             <if test="signature != null">#{signature},</if>
             <if test="status != null">#{status},</if>
             <if test="deleted != null">#{deleted},</if>
-
         </trim>
     </insert>
 

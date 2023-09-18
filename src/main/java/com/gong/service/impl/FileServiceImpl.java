@@ -18,7 +18,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public int insertOne(FileEntity file) {
+    public int saveOne(FileEntity file) {
         return fileMapper.insert(file);
     }
 

@@ -1,5 +1,6 @@
 package com.gong.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -19,11 +20,12 @@ public class User {
     private String mail;
     private String phone;
     private String signature;
-
     private String role;
     private Integer status;
     private Integer deleted;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }
 

@@ -40,10 +40,13 @@ public class JWTInterceptor implements HandlerInterceptor {
                 // 判断jwt所对应的用户是否还在数据库中
                 User user = userService.getById(claimMap.get("userId").asInt());
                 // 能够找到用户
-                if (user != null && user.getStatus() == 1) {
+                if (user != null && user.getStatus() != 0) {
                     BaseContent.setId(user.getId());        // 保存 id
                     Role role = roleService.getByName(user.getRole());
-                    if (role != null && user.getStatus() == 1) BaseContent.setPower(role.getPower());    // 用户的权限
+                    if (role != null && role.getStatus() != 0) {
+                        BaseContent.setRoleName(role.getName());
+                        BaseContent.setRoleId(role.getId());  // 角色id
+                    }
                     return true;
                 }
             }

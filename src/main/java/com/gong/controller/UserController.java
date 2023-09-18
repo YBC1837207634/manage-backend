@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/system/user")
+@RequestMapping("/user")
 public class UserController {
 
     private UserService userService;
@@ -19,22 +19,38 @@ public class UserController {
     }
 
     /**
-     *  /system/user/space
+     * user/space
      * 更新用户个人信息
+     *
      * @param from
      * @return
      */
     @PutMapping("/space")
-    public Result<String> update(@RequestBody BaseUserInfo from) {
+    public Result<String> updateSpace(@RequestBody BaseUserInfo from) {
         from.setId(BaseContent.getId());  // 确保修改的时当前的用户
         if (userService.updateBaseUserInfoById(from) != 0) {
             return Result.success("更新成功");
         }
         return Result.error(ResponseStatus.NOT_MODIFY, "更新失败!");
     }
+
     /**
-     * /system/user/space
+     * 根据id修改用户的信息(需要权限)
+     * @param user
+     * @return
+     */
+    @PutMapping
+    public Result<String> update(@RequestBody User user) {
+        if (user.getId() != null && userService.updateUserById(user) != 0 ) {
+            return Result.success("更新成功");
+        }
+        return Result.error(ResponseStatus.NOT_MODIFY, "更新失败!");
+    }
+
+    /**
+     * user/space
      * 个人中心的数据
+     *
      * @return
      */
     @GetMapping("/space")
@@ -45,6 +61,7 @@ public class UserController {
 
     /**
      * /system/user/updatePwd 修改密码
+     *
      * @param from
      * @return
      */
@@ -54,6 +71,19 @@ public class UserController {
             return Result.success("修改成功");
         }
         return Result.error(ResponseStatus.NOT_MODIFY, "修改失败！请检查格式");
+    }
+
+    /**
+     * 用户分页查询
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/list")
+    public Result<Pages> page(
+            @RequestParam(name = "page", defaultValue = "1") Integer page,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        return Result.success(userService.pages(page, pageSize));
     }
 
 }

@@ -10,7 +10,6 @@ import java.util.List;
 public class Route {
     private String path;
     private String name;
-    @JSONField()
     private String Component;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String redirect;

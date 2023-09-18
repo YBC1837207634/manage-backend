@@ -7,7 +7,7 @@ public interface FileService {
 
     FileEntity getById(int id);
 
-    int insertOne(FileEntity file);
+    int saveOne(FileEntity file);
 
     FileEntity getByMd5(String md5);
 

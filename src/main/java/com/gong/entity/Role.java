@@ -1,5 +1,6 @@
 package com.gong.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,12 +13,14 @@ public class Role {
 
     private Integer id;
     private String name;
-    private String power;
+    private Integer power;
     private Integer status;
     private Integer deleted;
 
     private Integer createBy;
     private Integer updateBy;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 }

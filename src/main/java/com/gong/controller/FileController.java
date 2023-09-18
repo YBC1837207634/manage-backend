@@ -58,7 +58,6 @@ public class FileController {
         InputStream inputStream = file.getInputStream();
         String md5 = SecureUtil.md5(inputStream);
         inputStream.close();
-
         // 查看数据库中是否存储该文件
         FileEntity fileEntity = fileService.getByMd5(md5);
         if (fileEntity == null) {
@@ -74,12 +73,10 @@ public class FileController {
             // 保存到本地
             file.transferTo(new File(basePath + fileName));
             // 保存到数据库中
-            fileService.insertOne(fileEntity);
+            fileService.saveOne(fileEntity);
         }
         // 返回名称
         return Result.success(fileEntity.getUrl());
-
-
     }
 
     /**
@@ -121,7 +118,6 @@ public class FileController {
             // 出现异常抛给全局异常处理器
             throw ex;
         }
-
     }
 
     public void checkDir() {

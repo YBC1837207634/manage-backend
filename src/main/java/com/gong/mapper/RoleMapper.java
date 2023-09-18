@@ -8,6 +8,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface RoleMapper {
 
     Role selectByName(String name);
-
-
 }

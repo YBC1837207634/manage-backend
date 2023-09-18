@@ -3,6 +3,8 @@ package com.gong.mapper;
 import com.gong.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
 
@@ -11,6 +13,10 @@ public interface UserMapper {
     User selectByUsername(String username);
 
     User selectByUsernameAndPassword(String username, String password);
+
+    List<User> limit(int start, int total);
+
+    int count();
 
     int updateById(User user);
 
