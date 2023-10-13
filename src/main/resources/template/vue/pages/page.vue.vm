@@ -1,0 +1,460 @@
+<template>
+#set($tName=${varName})
+#set($btName=${bigVarName})
+  <div class="app-container">
+    <!-- 顶部搜索区 -->
+    <div class="top">
+      <div class="item">
+        <span>搜索1</span>
+        <el-input
+            class="top-item"
+            v-model.trim="params"
+            size="medium"
+            placeholder="输入"
+            clearable>
+        </el-input>
+      </div>
+
+      </div>
+      <div class="item">
+        <span class="demonstration">创建时间</span>
+        <el-date-picker
+            v-model="timeList"
+            size="medium"
+            type="daterange"
+            range-separator="至"
+            value-format="yyyy-MM-dd"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            class="top-item"
+            style="width: 300px"
+        >
+        </el-date-picker>
+      </div>
+      <div class="item">
+        <el-button
+            type="primary"
+            size="medium"
+            @click="search"
+            :disabled="!$hasPermi(['system:${tName}:list'])">
+          搜索
+        </el-button>
+        <el-button size="medium" @click="reset" :disabled="!$hasPermi(['system:${tName}:list'])">重置</el-button>
+    </div>
+    <div class="import-div">
+      <el-button
+          size="small"
+          plain
+          type="primary"
+          icon="el-icon-search"
+          :disabled="!$hasPermi(['system:${tName}:add'])"
+          @click="handleSave">
+        新增
+      </el-button>
+      <el-button
+          size="small"
+          plain
+          type="danger"
+          icon="el-icon-search"
+          :disabled="!$hasPermi(['system:${tName}:del'])"
+          @click="handleDelete">
+        删除
+      </el-button>
+#if(${isExport})
+      <el-upload
+        style="display: inline-block; margin: 0 5px"
+        class="upload-demo"
+        :disabled="!$hasPermi(['system:${tName}:import'])"
+        :action="uploadUrl"
+        :show-file-list="false"
+        :headers="{ token }"
+        :on-success="uploadSuccess">
+      <el-button
+        size="small"
+        plain
+        type="primary"
+        icon="el-icon-search"
+        :disabled="!$hasPermi(['system:${tName}:import'])">
+        导入
+      </el-button>
+      </el-upload>
+      <el-button
+        size="small"
+        plain
+        type="primary"
+        icon="el-icon-search"
+        @click="download"
+        :disabled="!$hasPermi(['system:${tName}:export'])">
+        导出
+      </el-button>
+#end
+    </div>
+
+    <el-table
+        :data="tableData"
+        size="medium"
+        :header-cell-style="{ background: '#F8F8F9', color: '#000' }"
+        @selection-change="select${btName}">
+      <el-table-column align="center" type="selection" width="55">
+      </el-table-column>
+#foreach($col in $metas)
+#if(${col.columnNameCamel.contains("id")})
+        <el-table-column
+          prop="${col.columnNameCamel}"
+          label="${col.remarks}"
+          width="100"
+          align="center"
+        ></el-table-column>
+#elseif(${col.columnNameCamel.contains("status")})
+        <el-table-column label="${col.remarks}" prop="${col.columnNameCamel}"  align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-if="$hasPermi(['system:${tName}:edit'])"
+              v-model.number="scope.row.${col.columnNameCamel}"
+              :active-value="1"
+              :inactive-value="0"
+              @change="change${col.columnNameCamel}(scope.row)">
+            </el-switch>
+            <el-tag v-else :type="scope.row.${col.columnNameCamel} ? '' : 'info'">
+              {{ scope.row.${col.columnNameCamel} ? "启用" : "停用" }}</el-tag>
+          </template>
+        </el-table-column>
+#else
+        <el-table-column prop="${col.columnNameCamel}" label="${col.remarks}"></el-table-column>
+#end
+#end
+      <el-table-column label="操作" width="180" align="center">
+        <template slot-scope="scope">
+          <el-button
+              size="small"
+              @click="handleEdit(scope.$index, scope.row)"
+              type="text"
+              style="font-size: 14px"
+              v-if="scope.row.${tName}Type != 'S'"
+              :disabled="!$hasPermi(['system:${tName}:edit'])"
+          >编辑
+          </el-button>
+          <el-button
+            size="small"
+            type="text"
+            style="font-size: 14px"
+            @click="handleDelete(scope.$index, scope.row)"
+            v-if="scope.row.${tName}Type != 'S'"
+            :disabled="!$hasPermi(['system:${tName}:del'])"
+          >删除</el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页 -->
+    <el-pagination
+        style="text-align: center; padding-top: 10px"
+        @current-change="nextPage"
+        :page-size="params.pageSize"
+        layout="total, prev, pager, next, jumper"
+        :total="total">
+    </el-pagination>
+    <!-- Dialog -->
+    <el-dialog
+        title="修改${viewName}"
+        :visible.sync="dialogUpdateFormVisible"
+        :modal="false"
+        width="500px"
+    >
+      <el-form :model="${tName}" label-width="80px" :rules="rules">
+        <!-- 表单 -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogUpdateFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="update">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 新增 -->
+    <el-dialog
+        title="新增${viewName}"
+        :visible.sync="dialogSaveFormVisible"
+        :modal="false"
+        width="500px">
+      <el-form :model="form" label-width="80px" :rules="rules">
+      <!-- 表单 -->
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogSaveFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="save">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import {
+    pages,
+    update${btName},
+    export${btName},
+    gey${btName},
+    remove${bigVarName},
+    save${btName},
+  } from "@/api/${tName}";
+#if(${isExport})
+  import { mapState } from "vuex";
+  import code from "@/config/code";
+#end
+
+  export default {
+    name: "${btName}",
+    data() {
+      return {
+        // dialog
+        dialogUpdateFormVisible: false,
+        dialogSaveFormVisible: false,
+        uploadUrl: "http://localhost:8080/system/${tName}/upload",
+        // 选中的${viewName}
+        checked: [],
+        // ${viewName}信息
+        ${tName}: {},
+        // 列表信息
+        tableData: [],
+        // 新增表单
+        form: {},
+        // 搜索条件
+        params: {
+          page: 1,
+          pageSize: 10,
+        },
+        timeList: [],
+        total: 0,
+        // 表单校验
+        rules: {},
+        // 状态
+        statusOptions: [
+          {
+            value: 1,
+            label: "启用",
+          },
+          {
+            value: 0,
+            label: "停用",
+          },
+        ],
+      };
+    },
+    created() {
+      this.getList();
+    },
+    methods: {
+      // 提交${viewName}表单
+      update() {
+        update${btName}(this.${tName})
+            .then((res) => this.#[[$message]]#.success(res.data.msg))
+            .catch(() => this.#[[$message]]#.error("更新失败"));
+        this.dialogUpdateFormVisible = false;
+      },
+      // 根据条件分页查询
+      search() {
+        this.params.page = 1;
+        this.getList();
+      },
+      // 添加${viewName}
+      save() {
+        save${btName}(this.form)
+            .then(() => {
+              this.#[[$message]]#.success("保存成功！");
+              this.getList();
+            })
+            .catch((e) => this.#[[$message]]#.error(e));
+        this.dialogSaveFormVisible = false;
+      },
+      // 重置表单
+      reset() {
+        this.params = {
+          page: 1,
+          pageSize: 10,
+        };
+        this.timeList = [];
+        this.getList();
+      },
+      getList() {
+        Object.keys(this.params).forEach((key) => {
+          if (this.params[key] === "") {
+            this.params[key] = null;
+          }
+        });
+        // 起止日期
+        if (this.timeList instanceof Array && this.timeList.length > 1) {
+          (this.params.beginTime = this.timeList[0]),
+              (this.params.endTime = this.timeList[1]);
+        }
+        pages(this.params)
+            .then((response) => {
+              this.tableData = response.data.data.record;
+              this.total = response.data.data.total;
+            })
+            .catch(e=>e);
+      },
+
+      // 下一页
+      nextPage(currentPage) {
+        this.params.page = currentPage;
+        this.getList();
+      },
+      // 多选
+      select${btName}(val) {
+        this.checked = val.map((item) => Object.freeze(item.id));
+      },
+      // 新增按钮
+      handleSave() {
+        this.dialogSaveFormVisible = true;
+      },
+      // 编辑按钮
+      handleEdit(index, row) {
+        this.dialogUpdateFormVisible = true;
+        // 获取单个${viewName}信息
+        gey${btName}(row.id)
+            .then((res) => {
+              this.${tName} = res.data.data;
+            })
+            .catch((e) => this.#[[$message]]#.error(e));
+      },
+      // 删除单个
+      handleDelete(index, row) {
+        this.$confirm(`是否删除该${viewName}`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+            this.delete${btName}(row.id);
+          }).catch((e) => e);
+      },
+      // 批量删除
+      handleDelete${btName}s() {
+        if (this.checked.length != 0)
+          this.$confirm(`是否删除${viewName}`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }).then(() => {
+              this.delete${btName}(this.checked);
+            }).catch((e) => e);
+      },
+      // 删除${viewName}
+      delete${btName}(ids) {
+        remove${bigVarName}(ids)
+            .then((res) => {
+              this.#[[$message]]#.success(res.data.msg);
+              this.getList();
+            }).catch((e) => this.#[[$message]]#.error(e));
+      },
+      // 修改${viewName}状态
+      changeStatus(row) {
+        let text = row.${col.columnNameCamel} == 1 ? "启用" : "停用";
+        this.$confirm(`是否${text}该${viewName}`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+            update${btName}({ id: row.id, status: row.status })
+                .then((res) => {
+                  this.#[[$message]]#({
+                    type: "success",
+                    message: res.data.msg,
+                  });
+                }).catch(() => {
+                  row.status = row.status == 0 ? 1 : 0;
+                });
+            }).catch(() => {
+              row.status = row.status == 0 ? 1 : 0;
+            });
+      },
+#if(${isExport})
+      // 上传成功调用
+      uploadSuccess(response) {
+        if (response.code === code.SUCCESS) {
+          this.#[[$message]]#.success(response.msg);
+        } else {
+          this.#[[$message]]#.error(response.msg);
+        }
+      },
+      // ${viewName}信息导出
+      download() {
+        export${btName}()
+            .then((response) => {
+              let reader = new FileReader();
+              let _this = this;
+              reader.readAsText(response.data);
+              reader.onload = function (result) {
+                try {
+                  let resData = JSON.parse(result.target.result); // 解析对象成功，说明是json数据
+                  _this.#[[$message]]#.error(resData.msg);
+                } catch (err) {
+                  // 解析成对象失败，说明是正常的文件流
+                  let blob = new Blob([response.data], {
+                    //这里的type要和后端一致
+                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                  });
+                  let url = URL.createObjectURL(blob); //生成一个url
+                  window.open(url);
+                }
+              };
+            })
+            .catch((e) => console.error(e));
+      },
+    },
+    computed: {
+      ...mapState("${tName}", ["${tName}Info", "token"]),
+    },
+#end
+  };
+</script>
+<style  scoped>
+  .app-container {
+    padding: 20px 20px;
+  }
+
+  .top {
+    /* margin: 20px 0; */
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .top > .item {
+    display: inline;
+    padding: 0px 10px;
+  }
+
+  .top-item {
+    /* float: left; */
+    width: 200px;
+    margin-left: 8px;
+  }
+
+  .import-div {
+    margin: 20px 0;
+    font-size: 12px;
+  }
+
+  .upload-demo {
+    margin: 0 8px !important;
+  }
+
+  ::v-deep .el-table--scrollable-x .el-table__body-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::v-deep
+  .el-table--scrollable-x
+  .el-table__body-wrapper::-webkit-scrollbar-thumb {
+    background-color: silver;
+    border-radius: 3px;
+  }
+
+  ::v-deep
+  .el-table--scrollable-x
+  .el-table__body-wrapper::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+  }
+
+  ::v-deep .el-select-dropdown__wrap.el-scrollbar__wrap {
+    margin-bottom: 0 !important;
+  }
+</style>
