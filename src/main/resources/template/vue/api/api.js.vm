@@ -1,0 +1,51 @@
+import request from "@/utils/request";
+
+
+// ${viewName}查询
+export function pages(params) {
+    return request.request({
+        method: 'get',
+        url: 'system/${varName}/list',
+        isToken:true,
+        params
+    })
+}
+
+export function get${bigVarName}(id) {
+    return request({
+        method: 'get',
+        url: `/system/${varName}/#[[${id}]]#`,
+        isToken: true,
+    })
+}
+
+// 更新${viewName}
+export function update${bigVarName}(data) {
+    return request({
+        method: 'put',
+        url: '/system/${varName}',
+        isToken: true,
+        data
+    })
+}
+
+// 删除${viewName}
+export function remove${bigVarName}(ids) {
+    return request.request({
+        method: 'delete',
+        url: `system/${varName}/#[[${ids}]]#`,
+        isToken:true,
+    })
+}
+
+// 新增用户
+export function save${bigVarName}(data) {
+    return request({
+        method: 'post',
+        url: 'system/${varName}',
+        isToken: true,
+        data
+    })
+}
+
+

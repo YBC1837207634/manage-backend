@@ -1,0 +1,51 @@
+package ${packageName}.service.impl;
+
+import ${packageName}.entity.${className};
+import ${packageName}.mapper.${className}Mapper;
+import ${packageName}.service.${className}Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
+
+    @Autowired
+    private ${className}Mapper ${classNameSmall}Mapper;
+
+    @Override
+    public ${className} getBy${fieldCamel}(Long ${fieldSmallCamel}) {
+        return ${classNameSmall}Mapper.selectBy${fieldCamel}(${fieldSmallCamel});
+    }
+
+    @Override
+    public List<${className}> getList(${className} ${classNameSmall}) {
+        return ${classNameSmall}Mapper.selectList(${classNameSmall});
+    }
+
+    @Override
+    public int saveOne(${className} ${classNameSmall}) {
+        return ${classNameSmall}Mapper.insertOne(${classNameSmall});
+    }
+
+    @Override
+    public int saveBatch(List<${className}> ${classNameSmall}) {
+        return ${classNameSmall}Mapper.insertBatch(${classNameSmall});
+    }
+
+    @Override
+    public int update${className}By${fieldCamel}(${className} ${classNameSmall}) {
+        return ${classNameSmall}Mapper.updateBy${fieldCamel}(${classNameSmall});
+    }
+
+    @Override
+    public int removeBy${fieldCamel}(${type} ${fieldSmallCamel}) {
+        return ${classNameSmall}Mapper.deleteBy${fieldCamel}(${fieldSmallCamel});
+    }
+
+    @Override
+    public int removeBy${fieldCamel}s(List<${type}> ${fieldSmallCamel}s) {
+        return ${classNameSmall}Mapper.deleteBy${fieldCamel}s(${fieldSmallCamel}s);
+    }
+}

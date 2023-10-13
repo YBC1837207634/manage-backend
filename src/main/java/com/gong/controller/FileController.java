@@ -3,7 +3,7 @@ package com.gong.controller;
 import cn.hutool.crypto.SecureUtil;
 import com.gong.common.ResponseStatus;
 import com.gong.entity.FileEntity;
-import com.gong.entity.Result;
+import com.gong.vo.Result;
 import com.gong.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

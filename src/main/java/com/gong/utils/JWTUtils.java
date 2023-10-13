@@ -20,7 +20,7 @@ public class JWTUtils {
     //秘钥
     public static final String SECRET = "giaogaio";
 
-    public static String createToken(Integer userId) {
+    public static String createToken(String userId) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET);
             Map<String, Object> m = new HashMap<>();

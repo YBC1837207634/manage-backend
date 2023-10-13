@@ -27,7 +27,7 @@ CREATE TABLE `files`  (
 
 SET FOREIGN_KEY_CHECKS = 1;
 ```
-### user
+### sysUser
 ```sql
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

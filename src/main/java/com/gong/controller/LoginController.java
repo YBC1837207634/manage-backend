@@ -1,35 +1,31 @@
 package com.gong.controller;
 
-import com.gong.common.BaseContent;
 import com.gong.common.ResponseStatus;
-import com.gong.entity.*;
-import com.gong.service.RoleMenuService;
+import com.gong.dto.LoginForm;
+import com.gong.dto.SysUserDTO;
 import com.gong.service.SysMenuService;
-import com.gong.service.UserService;
-import com.gong.utils.JWTUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gong.vo.AuthResult;
+import com.gong.vo.Result;
+import com.gong.vo.Route;
+import com.gong.service.LoginService;
+import com.gong.utils.CustomUserDetailsUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class LoginController {
 
-    private UserService userService;
+    private LoginService loginService;
 
     private SysMenuService sysMenuService;
 
-    private RoleMenuService roleMenuService;
-
-    @Autowired
-    public LoginController(UserService userService, SysMenuService sysMenuService, RoleMenuService roleMenuService) {
-        this.userService = userService;
+    public LoginController(LoginService loginService, SysMenuService sysMenuService) {
+        this.loginService = loginService;
         this.sysMenuService = sysMenuService;
-        this.roleMenuService = roleMenuService;
     }
 
     /**
@@ -38,53 +34,45 @@ public class LoginController {
      * @return
      */
     @PostMapping("/login")
-    public AuthResult login(@RequestBody LoginFrom from) {
-        User u = userService.isLogin(from.getUsername(), from.getPassword());
-        if (u == null) {
-            return AuthResult.error(ResponseStatus.WARN, "登陆失败：账号或密码错误！");
-        } else if (u.getStatus() == 0) {
-            return AuthResult.error(ResponseStatus.WARN, "账号已停用");
+    public AuthResult login(@RequestBody LoginForm from) {
+        String token = loginService.login(from.getUsername(), from.getPassword());
+        if (token != null) {
+            return AuthResult.success("登陆成功！",token);
         }
-        String token = JWTUtils.createToken(u.getId());
-        return AuthResult.success("登陆成功！", token);
+        return AuthResult.error(ResponseStatus.INTERNAL, "用户名或密码错误");
     }
 
     /**
      * /register 注册
      */
     @PostMapping("/register")
-    public Result<String> register(@RequestBody LoginFrom from) {
-        if (userService.register(from) != 0) {
+    public Result<String> register(@RequestBody LoginForm from) {
+        if (loginService.register(from) != 0) {
             return Result.success("注册成功！");
         }
         return Result.error(ResponseStatus.WARN,"注册失败");
     }
+
     /**
      * /getInfo 返回当前登录的用户信息
      * @return
      */
     @GetMapping("/getInfo")
-    public Result<User> getInfo() {
-        User user = userService.getById(BaseContent.getId());
-        return Result.success(user);
+    public Result<SysUserDTO> getInfo() {
+        return Result.success(CustomUserDetailsUtils.getCustomUserDetails().getSysUserDTO());
     }
 
     /**
-     * 获取用户权限路由
-     * @return
+     * 获取当前用户的路由
      */
     @GetMapping("/getRouter")
     public Result<List<Route>> getRouter() {
-        List<Route> router;
-        List<String> types = new ArrayList<>();
-        types.add("M");  // 目录
-        types.add("C");  // 菜单
-        if (BaseContent.getRoleName().equals("管理员")) {
-            router = sysMenuService.getRouter(types);
-        } else {
-            List<Integer> ids = roleMenuService.getMenuIdByRoleId(BaseContent.getRoleId());
-            router = sysMenuService.getRouter(types, ids);
+        if (CustomUserDetailsUtils.isAdmin()) {
+            return Result.success(sysMenuService.getRouter(null));
         }
-        return Result.success(router);
+        Long id = CustomUserDetailsUtils.getId();
+        return Result.success(sysMenuService.getRouter(id));
     }
+
+
 }

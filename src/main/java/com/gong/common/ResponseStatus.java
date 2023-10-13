@@ -20,7 +20,11 @@ public class ResponseStatus {
     public static final int UNAUTHORIZED = 401;
 
     /**
-     * 操作失败
+     * 无权访问
+     */
+    public static final int FORBIDDEN = 403;
+    /**
+     * 未修改
      */
     public static final int NOT_MODIFY = 402;
 
@@ -42,15 +46,12 @@ public class ResponseStatus {
     /**
      * 系统内部错误
      */
-    public static final int ERROR = 500;
+    public static final int INTERNAL = 500;
 
     /**
      * 系统警告消息
      */
     public static final int WARN = 601;
 
-    /**
-     * 用户被禁用
-     */
-    public static final int USER_DISABLE = 602;
+
 }

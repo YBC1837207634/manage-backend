@@ -1,0 +1,24 @@
+package ${packageName}.mapper;
+
+import ${packageName}.entity.${className};
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface ${className}Mapper {
+
+    int insertBatch(List<${className}> ${classNameSmall}List);
+
+    int insertOne(${className} ${classNameSmall});
+
+    int deleteBy${fieldCamel}(${type} ${fieldSmallCamel});
+
+    int deleteBy${fieldCamel}s(List<${type}> ${fieldSmallCamel}s);
+
+    ${className} selectBy${fieldCamel}(${type} ${fieldSmallCamel});
+
+    List<${className}> selectList(${className} ${classNameSmall});
+
+    int updateBy${fieldCamel}(${className} ${classNameSmall});
+}

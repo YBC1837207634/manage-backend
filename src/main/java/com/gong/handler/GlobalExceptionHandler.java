@@ -1,7 +1,9 @@
 package com.gong.handler;
 
 import com.gong.common.ResponseStatus;
-import com.gong.entity.Result;
+import com.gong.exception.CUDException;
+import com.gong.exception.UnlawfulRequestException;
+import com.gong.vo.Result;
 import com.gong.exception.ExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -43,12 +45,22 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 请求错误
+     * 请求错误 求传来的参数不符合要求
      */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler({HttpMessageNotReadableException.class, NullPointerException.class})
     public Result<String> badRequest(Exception ex) {
         log.warn(ex.getMessage());
-        return Result.error(ResponseStatus.BAD_REQUEST, "Bad Request");
+        return Result.error(ResponseStatus.BAD_REQUEST, "请求不符合要求");
+    }
+
+    /**
+     * 增删改异常
+     * @return
+     */
+    @ExceptionHandler(CUDException.class)
+    public Result<String> cudEx(CUDException ex) {
+        log.warn(ex.getMessage());
+        return Result.error(ResponseStatus.NOT_MODIFY, ex.getMessage());
     }
 
     /**
@@ -58,7 +70,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public Result<String> Violation(Exception ex) {
         log.warn(ex.getMessage());
-        return Result.error(ResponseStatus.ERROR, "操作有误！");
+        return Result.error(ResponseStatus.INTERNAL, "操作有误！");
     }
 
 
@@ -80,4 +92,14 @@ public class GlobalExceptionHandler {
         log.warn(bindingResult.getFieldError().toString());
         return Result.error(ResponseStatus.BAD_REQUEST, bindingResult.getFieldError().getDefaultMessage());
     }
+
+    /**
+     * 非法请求
+     */
+    @ExceptionHandler(UnlawfulRequestException.class)
+    public Result<String> argument(UnlawfulRequestException exception)  {
+        log.warn(exception.getMessage());
+        return Result.error(ResponseStatus.BAD_REQUEST, exception.getMessage());
+    }
+
 }
