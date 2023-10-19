@@ -66,7 +66,7 @@
     </insert>
     <!--  删除  -->
     <delete id="deleteById">
-        DELETE FROM sys_role WHERE id = #{id} AND `key` != 'admin'
+        DELETE FROM sys_role WHERE id = #{id} AND id != 1
     </delete>
 
     <!-- 批量删除 -->
@@ -76,7 +76,7 @@
         <foreach collection="ids" item="item" separator="," nullable="false" open="(" close=")">
             #{item}
         </foreach>
-        AND `key` != 'admin'
+        AND id != 1
     </delete>
 
     <!-- 查询-->

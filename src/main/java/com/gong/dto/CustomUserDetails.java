@@ -25,12 +25,12 @@ public class CustomUserDetails implements UserDetails {
         this.sysUserDTO = sysUserDTO;
         this.authorityList = authorities;
     }
-    public CustomUserDetails() {}
 
-    // 使用自定义的权限验证，不使用 GrantedAuthority
+    public CustomUserDetails() {}
 
     public boolean isAdmin() {return sysUserDTO.isAdmin();}
 
+    // 使用自定义的权限验证，不使用 GrantedAuthority
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

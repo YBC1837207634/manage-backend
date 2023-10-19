@@ -103,7 +103,7 @@
 
     <!--  删除  -->
     <delete id="deleteById">
-        DELETE FROM sys_user WHERE id = #{id} AND user_type != 'S'
+        DELETE FROM sys_user WHERE id = #{id} AND id != 1
     </delete>
 
     <!-- 批量删除 -->
@@ -113,7 +113,7 @@
         <foreach collection="ids" item="item" separator="," nullable="false" open="(" close=")">
             #{item}
         </foreach>
-        AND user_type != 'S'
+        AND id != 1
     </delete>
 
     <!-- 查询-->
@@ -172,6 +172,12 @@
             AND create_time BETWEEN DATE_FORMAT(#{beginTime}, '%Y-%m-%d') AND DATE_FORMAT(#{endTime}, '%Y-%m-%d')
         </if>
     </where>
+    </select>
+
+    <!-- 根据账号查询  -->
+    <select id="selectByUserName" resultType="SysUser">
+        <include refid="sysUserColumns"/>
+        WHERE username = #{username}
     </select>
 
     <!-- 更新 -->

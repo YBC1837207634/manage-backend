@@ -5,6 +5,8 @@ import ${packageName}.mapper.${className}Mapper;
 import ${packageName}.service.${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.github.pagehelper.PageHelper;
+import java.util.Objects;
 
 import java.util.List;
 
@@ -21,7 +23,13 @@ public class ${className}ServiceImpl implements ${className}Service {
 
     @Override
     public List<${className}> getList(${className} ${classNameSmall}) {
+#if(${isPage})
+        if (Objects.isNull(${classNameSmall}))
+            ${classNameSmall} = new ${className}();
+        if (Objects.nonNull(${classNameSmall}.getPage()) && Objects.nonNull(${classNameSmall}.getPageSize()))
+            PageHelper.startPage(${classNameSmall}.getPage(), ${classNameSmall}.getPageSize());
         return ${classNameSmall}Mapper.selectList(${classNameSmall});
+#end
     }
 
     @Override

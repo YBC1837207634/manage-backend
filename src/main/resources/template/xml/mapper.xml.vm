@@ -59,10 +59,13 @@
     <!-- 批量删除 -->
     <delete id="deleteBy${fieldCamel}s">
         DELETE FROM ${tableName}
-        WHERE ${field} in
-        <foreach collection="${fieldSmallCamel}s" item="item" separator="," nullable="false" open="(" close=")">
-            #{item}
-        </foreach>
+        WHERE ${field}
+        <if test="${fieldSmallCamel}s != null and ${fieldSmallCamel}s > 0">
+            IN
+            <foreach collection="${fieldSmallCamel}s" item="item" separator="," nullable="false" open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
     </delete>
 
     <!-- 查询-->

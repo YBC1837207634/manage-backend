@@ -5,41 +5,28 @@
     <!-- 顶部搜索区 -->
     <div class="top">
       <div class="item">
-        <span>搜索1</span>
-        <el-input
-            class="top-item"
-            v-model.trim="params"
-            size="medium"
-            placeholder="输入"
-            clearable>
+        <span>搜索字段</span>
+        <el-input class="top-item" v-model.trim="params.businessType" size="medium" placeholder="输入业务类型" clearable>
         </el-input>
       </div>
-
+      <div class="item">
+        <span>操作状态</span>
+        <el-select v-model="params.status" placeholder="状态" class="top-item" size="medium" :popper-append-to-body="false">
+          <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value">
+          </el-option>
+        </el-select>
       </div>
       <div class="item">
-        <span class="demonstration">创建时间</span>
-        <el-date-picker
-            v-model="timeList"
-            size="medium"
-            type="daterange"
-            range-separator="至"
-            value-format="yyyy-MM-dd"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            class="top-item"
-            style="width: 300px"
-        >
+        <span class="demonstration">操作时间</span>
+        <el-date-picker v-model="timeList" size="medium" type="daterange" range-separator="至" value-format="yyyy-MM-dd"
+                        start-placeholder="开始日期" end-placeholder="结束日期" class="top-item" style="width: 300px">
         </el-date-picker>
       </div>
       <div class="item">
-        <el-button
-            type="primary"
-            size="medium"
-            @click="search"
-            :disabled="!$hasPermi(['system:${tName}:list'])">
-          搜索
-        </el-button>
-        <el-button size="medium" @click="reset" :disabled="!$hasPermi(['system:${tName}:list'])">重置</el-button>
+        <el-button type="primary" size="medium" @click="search"
+                   :disabled="!$hasPermi(['system:operLog:list'])">搜索</el-button>
+        <el-button size="medium" @click="reset" :disabled="!$hasPermi(['system:operLog:list'])">重置</el-button>
+      </div>
     </div>
     <div class="import-div">
       <el-button
@@ -148,11 +135,15 @@
     </el-table>
     <!-- 分页 -->
     <el-pagination
-        style="text-align: center; padding-top: 10px"
-        @current-change="nextPage"
-        :page-size="params.pageSize"
-        layout="total, prev, pager, next, jumper"
-        :total="total">
+      background
+      style="text-align: center; padding-top: 20px"
+      @current-change="nextPage"
+      @size-change="handleSizeChange"
+      :page-size="params.pageSize"
+      :current-page.sync="currentPage"
+      :page-sizes="[10, 20, 50, 100]"
+      layout="total, prev, pager, next, sizes, jumper"
+      :total="total">
     </el-pagination>
     <!-- Dialog -->
     <el-dialog
@@ -221,6 +212,10 @@
           page: 1,
           pageSize: 10,
         },
+        // 当前页数
+        currentPage: 1,
+        // 一页数据量
+        pageSize: 10,
         timeList: [],
         total: 0,
         // 表单校验
@@ -264,12 +259,13 @@
             .catch((e) => this.#[[$message]]#.error(e));
         this.dialogSaveFormVisible = false;
       },
-      // 重置表单
+      // 重置搜索条件
       reset() {
         this.params = {
           page: 1,
-          pageSize: 10,
+          pageSize: this.pageSize
         };
+        this.currentPage = 1;
         this.timeList = [];
         this.getList();
       },
@@ -296,6 +292,11 @@
       nextPage(currentPage) {
         this.params.page = currentPage;
         this.getList();
+      },
+      // 选择一页显示数据数量
+      handleSizeChange(val) {
+        this.params.pageSize = this.pageSize = val;
+        this.getList()
       },
       // 多选
       select${btName}(val) {
@@ -328,7 +329,7 @@
       // 批量删除
       handleDelete${btName}s() {
         if (this.checked.length != 0)
-          this.$confirm(`是否删除${viewName}`, "提示", {
+          this.$confirm(`选中#[[${this.checked.length}]]#条数据，是否删除`, "提示", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             type: "warning",
@@ -340,8 +341,9 @@
       delete${btName}(ids) {
         remove${bigVarName}(ids)
             .then((res) => {
-              this.#[[$message]]#.success(res.data.msg);
+              this.clicked = []
               this.getList();
+              this.#[[$message]]#.success(res.data.msg);
             }).catch((e) => this.#[[$message]]#.error(e));
       },
       // 修改${viewName}状态
@@ -397,18 +399,17 @@
               };
             })
             .catch((e) => console.error(e));
-      },
+        },
+#end
     },
     computed: {
       ...mapState("${tName}", ["${tName}Info", "token"]),
+
     },
-#end
+
   };
 </script>
 <style  scoped>
-  .app-container {
-    padding: 20px 20px;
-  }
 
   .top {
     /* margin: 20px 0; */

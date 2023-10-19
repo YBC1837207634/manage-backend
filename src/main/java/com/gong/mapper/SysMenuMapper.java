@@ -23,4 +23,6 @@ public interface SysMenuMapper {
     int updateById(SysMenu sysMenu);
 
     List<SysMenu> selectMenuByUserIdAndType(Long id, String... menuTypes);
+
+    List<SysMenu> selectMenuByRoleIdType(Long roleId);
 }

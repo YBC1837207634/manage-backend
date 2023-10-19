@@ -1,12 +1,9 @@
 package com.gong.service;
 
 import com.gong.entity.SysRoleMenu;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 
-@Service
 public interface SysRoleMenuService {
 
     SysRoleMenu getByRoleId(Long roleId);

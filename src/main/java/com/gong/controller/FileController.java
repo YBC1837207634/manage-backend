@@ -1,12 +1,13 @@
 package com.gong.controller;
 
 import cn.hutool.crypto.SecureUtil;
+import com.gong.enums.BusinessType;
+import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
 import com.gong.entity.FileEntity;
 import com.gong.vo.Result;
 import com.gong.service.FileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
@@ -20,9 +21,8 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/file")
+@Slf4j
 public class FileController {
-
-    private Logger log = LoggerFactory.getLogger(FileController.class);
 
     @Autowired
     private FileService fileService;
@@ -39,6 +39,7 @@ public class FileController {
      * @return
      * @throws IOException
      */
+    @Log(title = "上传文件", businessType = BusinessType.INSERT)
     @PostMapping("/upload")
     public Result<String> upload(MultipartFile file) throws IOException {
         if (file == null || file.getSize() == 0 || !StringUtils.hasText(file.getOriginalFilename())) {
@@ -57,7 +58,6 @@ public class FileController {
         // md5 加密
         InputStream inputStream = file.getInputStream();
         String md5 = SecureUtil.md5(inputStream);
-        inputStream.close();
         // 查看数据库中是否存储该文件
         FileEntity fileEntity = fileService.getByMd5(md5);
         if (fileEntity == null) {

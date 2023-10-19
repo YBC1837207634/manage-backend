@@ -248,4 +248,20 @@
         </where>
     </select>
 
+    <!-- 根据角色id查询对应的菜单列表 -->
+    <select id="selectMenuByRoleIdType" resultType="SysMenu">
+        <include refid="sysMenuColumns"/>
+            WHERE
+            id IN (
+            SELECT DISTINCT
+                srm.menu_id
+            FROM
+                sys_role sr
+                    JOIN sys_role_menu srm ON sr.id = srm.role_id
+            WHERE
+                sr.id = #{roleId}
+#               AND sr.`status` = 1
+            )
+          AND `status` = 1
+    </select>
 </mapper>

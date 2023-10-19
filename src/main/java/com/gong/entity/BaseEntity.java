@@ -29,6 +29,14 @@ public class BaseEntity implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String endTime;
 
+    // 需要进行排序的字段
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String orderByColumn;
+
+    // 排序顺序
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String isAsc;
+
     public String getBeginTime() {
         return beginTime;
     }

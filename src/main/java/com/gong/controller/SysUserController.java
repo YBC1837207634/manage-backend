@@ -3,9 +3,12 @@ package com.gong.controller;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.github.pagehelper.PageInfo;
+import com.gong.enums.BusinessType;
+import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
 import com.gong.dto.*;
 import com.gong.entity.*;
+import com.gong.exception.CUDException;
 import com.gong.vo.Pages;
 import com.gong.vo.Result;
 import com.gong.service.SysUserService;
@@ -42,6 +45,7 @@ public class SysUserController {
      * @param from
      * @return
      */
+    @Log(title = "更新个人信息", businessType = BusinessType.EDIT)
     @PutMapping("/space")
     public Result<String> updateSpace(@RequestBody BaseUserInfo from) {
         from.setId(CustomUserDetailsUtils.getId());
@@ -68,6 +72,7 @@ public class SysUserController {
      * @param from
      * @return
      */
+    @Log(title = "修改密码", businessType = BusinessType.EDIT)
     @PutMapping("/updatePwd")
     public Result<String> updatePwd(@RequestBody LoginForm from) {
         SysUser user = new SysUser();
@@ -112,6 +117,7 @@ public class SysUserController {
      * @return
      */
     @PutMapping
+    @Log(title = "修改用户的信息", businessType = BusinessType.EDIT)
     @PreAuthorize("@s.hasAuthority('system:user:edit')")
     public Result<String> update(@RequestBody BaseUserInfo from) {
         if (from.getId() != null ) {
@@ -128,6 +134,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping
+    @Log(title = "添加用户", businessType = BusinessType.INSERT)
     @PreAuthorize("@s.hasAuthority('system:user:add')")
     public Result<String> save(@RequestBody SysUserDTO user) {
         if (StringUtils.hasText(user.getPassword()))
@@ -143,10 +150,13 @@ public class SysUserController {
      * @return Result<String>
      */
     @DeleteMapping("/{ids}")
+    @Log(title = "删除用户", businessType = BusinessType.DELETE)
     @PreAuthorize("@s.hasAuthority('system:user:del')")
     public Result<String> remove(@PathVariable List<Long> ids) {
-        sysUserService.removeByIds(ids);
-        return Result.success("删除成功");
+        if (sysUserService.removeByIds(ids) != 0) {
+            return Result.success("删除成功");
+        }
+        throw new CUDException("删除失败，检查条件是否正确");
     }
 
     /**
@@ -162,7 +172,7 @@ public class SysUserController {
         // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
         String fileName = URLEncoder.encode("测试", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        EasyExcel.write(response.getOutputStream(), SysUser.class).sheet("模板").doWrite(sysUserService.getList());
+        EasyExcel.write(response.getOutputStream(), SysUser.class).sheet("模板").doWrite(sysUserService.getList(null));
     }
 
     /**

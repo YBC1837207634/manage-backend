@@ -13,6 +13,7 @@ import com.gong.mapper.SysUserMapper;
 import com.gong.mapper.SysUserRoleMapper;
 import com.gong.service.SysUserService;
 import com.gong.utils.CustomUserDetailsUtils;
+import com.gong.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -48,20 +49,16 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     public List<SysUser> getList(SysUser params) {
-        if (!CustomUserDetailsUtils.getCustomUserDetails().isAdmin())
-            params.setUserType("C"); //
+        if (Objects.isNull(params))
+            params = new SysUser();
         if (Objects.nonNull(params.getPage()) && Objects.nonNull(params.getPageSize()))
             PageHelper.startPage(params.getPage(), params.getPageSize());
-        return sysUserMapper.selectList(params);
-    }
-
-    public List<SysUser> getList() {
-        if (!CustomUserDetailsUtils.getCustomUserDetails().isAdmin()) {
-            SysUser params = new SysUser();
-            params.setUserType("C"); //
-            return sysUserMapper.selectList(params);
+        List<SysUser> sysUsers = sysUserMapper.selectList(params);
+        // 如果不是管理员就过滤掉管理员用户
+        if (!CustomUserDetailsUtils.isAdmin()) {
+            sysUsers = sysUsers.stream().filter(user -> !user.isAdmin()).toList();
         }
-        return sysUserMapper.selectList(null);
+        return sysUsers;
     }
 
     /**
@@ -108,12 +105,14 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public int saveOne(SysUser user) {
-        if (sysUserMapper.selectById(user.getId()) != null)
-            throw new ExistException("用户已存在");
         if (StringUtils.hasText(user.getUsername())
             && StringUtils.hasText(user.getPassword())
             && user.getUsername().length() <= 30
             && user.getPassword().length() <= 30 ) {
+            // 查看该用户是否存在
+            SysUser res = sysUserMapper.selectByUserName(user.getUsername());
+            if (!Objects.isNull(res))
+                throw new ExistException("用户已存在");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
             throw new CUDException("用户名密码不可为空！");
@@ -135,8 +134,7 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public int updateSysUserById(SysUser sysUser) {
-        SysUser user = sysUserMapper.selectById(sysUser.getId());
-        if (user.getUserType().equals("S") && !CustomUserDetailsUtils.isAdmin()) {
+        if (!CustomUserDetailsUtils.isAdmin() && sysUser.isAdmin()) {
             throw new CUDException("管理员不可修改");
         }
         // 更新用户信息
@@ -188,6 +186,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public int removeById(Long id) {
+        if (SysUser.isAdmin(id)) throw new CUDException("管理员用户不可删除！");
         int i = sysUserMapper.deleteById(id);
         if (i != 0) sysUserRoleMapper.deleteByUserId(id);
         return i;
@@ -198,6 +197,11 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public int removeByIds(List<Long> ids) {
+        for (Long id : ids) {
+            if (SysUser.isAdmin(id)) {
+                throw new CUDException("管理员用户不可删除！");
+            }
+        }
         int i = sysUserMapper.deleteByIds(ids);
         if (i != 0) sysUserRoleMapper.deleteByUserIds(ids);
         return i;
@@ -208,6 +212,10 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public List<String> getPurviewByUserId(long id) {
+        // 如果是管理员用户
+        if (SysUser.isAdmin(id)) {
+            return List.of("*:*:*");
+        }
         List<SysMenu> purview = sysMenuMapper.selectMenuByUserIdAndType(id, "B");
         return purview.stream().map(SysMenu::getPurview).toList();
     }

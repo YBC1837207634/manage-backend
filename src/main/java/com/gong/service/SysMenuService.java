@@ -3,12 +3,10 @@ package com.gong.service;
 import com.gong.entity.SysMenu;
 import com.gong.vo.MenuItem;
 import com.gong.vo.Route;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
-@Service
 public interface SysMenuService {
 
     SysMenu getById(Long id);
@@ -27,7 +25,7 @@ public interface SysMenuService {
 
     List<Route> getChildrenList(List<SysMenu> menus, long parent);
 
-    List<SysMenu> getMenuListByUserId(long userId);
+    List<SysMenu> getMenuListByRoleId(long roleId);
 
     List<MenuItem> getMenuTree();
 

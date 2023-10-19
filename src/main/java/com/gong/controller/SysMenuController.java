@@ -1,6 +1,9 @@
 package com.gong.controller;
 
+import com.gong.enums.BusinessType;
+import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
+import com.gong.exception.CUDException;
 import com.gong.service.SysMenuService;
 import com.gong.vo.MenuItem;
 import com.gong.vo.MenuSelect;
@@ -28,6 +31,7 @@ public class SysMenuController {
      * @return
      */
     @PostMapping
+    @Log(title = "添加菜单", businessType = BusinessType.INSERT)
     @PreAuthorize("@s.hasAuthority('system:menu:add')")
     Result<String> save(@RequestBody @Validated SysMenu menu) {
         if (sysMenuService.saveOne(menu) != 0) {
@@ -37,6 +41,7 @@ public class SysMenuController {
     }
 
     @PutMapping
+    @Log(title = "修改菜单", businessType = BusinessType.EDIT)
     @PreAuthorize("@s.hasAuthority('system:menu:edit')")
     Result<String> update(@RequestBody @Validated SysMenu menu) {
         if (sysMenuService.updateSysMenuById(menu) != 0) {
@@ -64,7 +69,7 @@ public class SysMenuController {
     @PreAuthorize("@s.hasAuthority('system:menu:list')")
     Result<MenuSelect> menuTreeSelect(@PathVariable("id") long id) {
         List<MenuItem> menuTree = sysMenuService.getMenuTree();
-        List<SysMenu> menuList = sysMenuService.getMenuListByUserId(id);
+        List<SysMenu> menuList = sysMenuService.getMenuListByRoleId(id);
         List<Long> longs = menuList.stream().map(SysMenu::getId).toList();
         return Result.success(new MenuSelect(menuTree, longs));
     }
@@ -94,11 +99,15 @@ public class SysMenuController {
      * @param id
      * @return
      */
+    @Log(title = "删除菜单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
     @PreAuthorize("@s.hasAuthority('system:menu:del')")
     Result<String> remove(@PathVariable("id") long id) {
-        sysMenuService.removeById(id);
-        return Result.success("删除成功");
+        if (sysMenuService.removeById(id) != 0) {
+            return Result.success("删除成功");
+        }
+        throw new CUDException("删除失败，检查条件是否正确");
+
     }
 
 }

@@ -43,12 +43,12 @@ public class CodeGenUtils {
      * 入口方法
      * @param tableName
      */
-    public static void generate(String tableName, String field, String type, String controllerUrl, String viewName, Boolean isExport)  {
+    public static void generate(String tableName, String field, String type, String controllerUrl, String viewName, Boolean isExport, Boolean isPage)  {
         //设置velocity资源加载器
         Properties prop = new Properties();
         prop.put("file.resource.loader.class", ClasspathResourceLoader.class.getName());
         Velocity.init(prop);
-        VelocityContext context = createVelocityContext(tableName, field, type, controllerUrl, viewName, isExport);
+        VelocityContext context = createVelocityContext(tableName, field, type, controllerUrl, viewName, isExport, isPage);
         String entityName = (String) context.get("className");
         create(entityName, context);
     }
@@ -61,7 +61,7 @@ public class CodeGenUtils {
      * @param url controller 接口url
      * @return VelocityContext
      */
-    public static VelocityContext createVelocityContext(String tableName, String field, String type, String url, String viewName, Boolean isExport) {
+    public static VelocityContext createVelocityContext(String tableName, String field, String type, String url, String viewName, Boolean isExport, Boolean isPage) {
         String entityName = convertToCamelCase(tableName);
         // 初始化表的元数据
         List<Map<String, String>> meta = DbUtils.TableMeta(dbUrl, username, password, tableName);
@@ -80,6 +80,7 @@ public class CodeGenUtils {
         context.put("url",url);
         context.put("metas", meta);
         context.put("tableName",tableName);
+        context.put("isPage", isPage);
         // vue
         context.put("viewName", viewName); // 展示的名称
         // 去前缀
@@ -148,7 +149,7 @@ public class CodeGenUtils {
            return  v + "pages" + File.separator + "index.vue";
         }
         if (templateName.contains("api.js.vm")) {
-            return  v + "api" + File.separator + "api.js.vm";
+            return  v + "api" + File.separator + entityName + ".js";
         }
         return "error.java";
     }

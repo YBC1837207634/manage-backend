@@ -22,6 +22,8 @@ public interface SysUserMapper {
 
     SysUser selectById(Long id);
 
+    SysUser selectByUserName(String username);
+
     List<SysUser> selectList(SysUser sysUser);
 
     int updateById(SysUser sysUser);

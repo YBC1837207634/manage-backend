@@ -1,6 +1,7 @@
 package ${packageName}.controller;
 
-import ${packageName}.common.Result;
+import ${packageName}.vo.Pages;
+import ${packageName}.vo.Result;
 import ${packageName}.entity.${className};
 import ${packageName}.service.${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,17 +41,22 @@ public class ${className}Controller {
     /**
      * 查询
      */
-    @GetMapping
+    @GetMapping("/list")
     Result<List<${className}>> list(${className} ${classNameSmall}) {
+#if(${isPage})
+        List<${className}> list = ${classNameSmall}Service.getList(${classNameSmall});
+        return Result.success(Pages.createPage(list));
+#else
         return Result.success(${classNameSmall}Service.getList(${classNameSmall}));
+#end
     }
 
     /**
      * 删除
      */
-    @DeleteMapping("/{${fieldSmallCamel}}")
-    Result<String> remove(@PathVariable ${type} ${fieldSmallCamel}) {
-        ${classNameSmall}Service.removeBy${fieldCamel}(${fieldSmallCamel});
+    @DeleteMapping("/{${fieldSmallCamel}s}")
+    Result<String> remove(@PathVariable List<${type}> ${fieldSmallCamel}s) {
+        ${classNameSmall}Service.removeBy${fieldCamel}s(${fieldSmallCamel}s);
         return Result.success("删除成功");
     }
 }

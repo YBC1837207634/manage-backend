@@ -1,11 +1,15 @@
 package com.gong.service.impl;
 
+import com.gong.annotation.Log;
 import com.gong.dto.CustomUserDetails;
 import com.gong.dto.LoginForm;
 import com.gong.dto.SysUserDTO;
 import com.gong.entity.SysUser;
+import com.gong.entity.SysUserRole;
 import com.gong.exception.ExistException;
+import com.gong.mapper.SysRoleMapper;
 import com.gong.mapper.SysUserMapper;
+import com.gong.mapper.SysUserRoleMapper;
 import com.gong.service.LoginService;
 import com.gong.utils.JWTUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,14 +31,17 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
 
     private SysUserMapper sysUserMapper;
 
+    private SysUserRoleMapper sysUserRoleMapper;
+
     private PasswordEncoder passwordEncoder;
 
     private AuthenticationManager authenticationManager;
 
-    public LoginServiceImpl(SysUserMapper sysUserMapper, PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager) {
+    public LoginServiceImpl(SysUserMapper sysUserMapper, PasswordEncoder passwordEncoder, @Lazy AuthenticationManager authenticationManager, SysUserRoleMapper sysUserRoleMapper) {
         this.sysUserMapper = sysUserMapper;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.sysUserRoleMapper = sysUserRoleMapper;
     }
 
     /**
@@ -60,16 +67,14 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
      * @return
      */
     @Override
-    public int register(LoginForm form) {
+    public boolean register(LoginForm form) {
         if (StringUtils.hasText(form.getUsername())
                 && StringUtils.hasText(form.getPassword())
                 && form.getUsername().length() <= 30
                 && form.getPassword().length() <= 30 ) {
             // 根据用户名查询用户
-            SysUser query = new SysUser();
-            query.setUsername(form.getUsername());
-            List<SysUser> res = sysUserMapper.selectList(query);
-            if (!Objects.isNull(res) && !res.isEmpty()) throw new ExistException("用户已存在");
+            SysUser res = sysUserMapper.selectByUserName(form.getUsername());
+            if (!Objects.isNull(res)) throw new ExistException("用户已存在");
             // 不存在就注册
             SysUser sysUser = new SysUser();
             sysUser.setUsername(form.getUsername());
@@ -77,9 +82,15 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
             sysUser.setUserType("R"); // 注册用户
             // 默认的昵称就是用户名
             sysUser.setNickname(form.getUsername());
-            return sysUserMapper.insertOne(sysUser);
+            sysUserMapper.insertOne(sysUser);
+            // 分配一个角色
+            SysUserRole userRole = new SysUserRole();
+            userRole.setUserId(sysUser.getId());
+            userRole.setRoleId(3L);
+            sysUserRoleMapper.insertOne(userRole);
+            return true;
         }
-        return 0;
+        return false;
     }
 
     /**
@@ -88,15 +99,12 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         // 根据用户名查询用户
-        SysUser query = new SysUser();
-        query.setUsername(username);
-        List<SysUser> res = sysUserMapper.selectList(query);
-        if (Objects.isNull(res) || res.isEmpty()) {
+        SysUser user = sysUserMapper.selectByUserName(username);
+        if (Objects.isNull(user)) {
             throw new RuntimeException("账号不存在");
         }
-        SysUser sysUser = res.get(0);
         SysUserDTO sysUserDTO = new SysUserDTO();
-        BeanUtils.copyProperties(sysUser, sysUserDTO, "roles");
+        BeanUtils.copyProperties(user, sysUserDTO);
         return new CustomUserDetails(sysUserDTO, null);
     }
 

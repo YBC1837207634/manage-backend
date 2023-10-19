@@ -6,6 +6,6 @@ public interface LoginService {
 
     String login(String username, String password);
 
-    int register(LoginForm form);
+    boolean register(LoginForm form);
 
 }

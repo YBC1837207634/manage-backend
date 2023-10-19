@@ -7,7 +7,6 @@ import com.gong.entity.SysRole;
 import com.gong.entity.SysUser;
 import com.gong.exception.TokenException;
 import com.gong.handler.TokenExceptionHandler;
-import com.gong.service.SysRoleService;
 import com.gong.service.SysUserService;
 import com.gong.utils.CustomUserDetailsUtils;
 import com.gong.utils.JWTUtils;
@@ -22,7 +21,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,16 +34,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private SysUserService sysUserService;
 
-    private SysRoleService sysRoleService;
-
     @Autowired
     public void setUserMapper(SysUserService sysUserService) {
         this.sysUserService = sysUserService;
-    }
-
-    @Autowired
-    public void setSysRoleService(SysRoleService sysRoleService) {
-        this.sysRoleService = sysRoleService;
     }
 
     @Override
@@ -73,21 +64,9 @@ public class JWTFilter extends OncePerRequestFilter {
             // 获取角色列表
             List<SysRole> roles = sysUserService.getSysRoleByUserId(user.getId());
             SysUserDTO userDTO = new SysUserDTO();
-            BeanUtils.copyProperties(user,userDTO,"roles");
-            // 是否是管理员
-            for (SysRole role: roles) {
-                if (role.getKey().equals("admin")) {
-                    userDTO.setAdmin(true);
-                    break;
-                }
-            }
-            List<String> purview = new ArrayList<>();
-            if (userDTO.isAdmin()) {
-                purview.add("*:*:*");
-            } else {
-                // 不是管理员得到用户所对应的权限标识符列表
-                purview = sysUserService.getPurviewByUserId(user.getId());
-            }
+            BeanUtils.copyProperties(user,userDTO);
+            // 不是管理员得到用户所对应的权限标识符列表
+            List<String> purview = sysUserService.getPurviewByUserId(user.getId());
             userDTO.setRoles(roles);
             userDTO.setPurview(purview);
             // 创建一个 userDetails 存放到凭证中，用于后续使用

@@ -76,13 +76,13 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     /**
-     * 通过用户id获取所对应的所有菜单
-     * @param userId
-     * @return
+     * 通过角色id获取所对应的菜单
+     * @param roleId 角色id
+     * @return 菜单
      */
     @Override
-    public List<SysMenu> getMenuListByUserId(long userId) {
-        return sysMenuMapper.selectMenuByUserIdAndType(userId);
+    public List<SysMenu> getMenuListByRoleId(long roleId) {
+        return sysMenuMapper.selectMenuByRoleIdType(roleId);
     }
 
     /**
@@ -123,10 +123,13 @@ public class SysMenuServiceImpl implements SysMenuService {
                 // 配置路由信息
                 route.setName(menu.getName());
                 route.setPath(menu.getPath());
-                if (StringUtils.hasText(menu.getComponent())) {
-                    route.setComponent(menu.getComponent());
-                } else {
+                // 设置组件
+                if (menu.getParentId() == 0 && menu.getMenuType().equals("M")) {
                     route.setComponent("Layout");
+                } else if (menu.getMenuType().equals("M") && menu.getParentId() != 0) {
+                    route.setComponent("parentMenu");
+                } else if (StringUtils.hasText(menu.getComponent())) {
+                    route.setComponent(menu.getComponent());
                 }
                 // 如果是目录则不可被点击
                 if (menu.getMenuType().equals("M")) route.setRedirect("noRedirect");
@@ -134,7 +137,9 @@ public class SysMenuServiceImpl implements SysMenuService {
                 // 递归遍历查找是否还有子路由
                 List<Route> children = getChildrenList(menus, menu.getId());
                 // 如果有就存到当前路由中
-                if(children.size() > 0) route.setChildren(children);
+                if(children.size() > 0) {
+                    route.setChildren(children);
+                };
                 // 将当前路有存入列表
                 routes.add(route);
             }
@@ -186,7 +191,11 @@ public class SysMenuServiceImpl implements SysMenuService {
     public void setDefault(SysMenu menu) {
         // 如果是目录
         if (menu.getMenuType().equals("M")) {
-            menu.setComponent("Layout");
+            if (menu.getParentId() == 0) {
+                menu.setComponent("Layout");
+            } else {
+                menu.setComponent("parentMenu");
+            }
             menu.setCache(0);
             menu.setName("");
             menu.setPurview("");

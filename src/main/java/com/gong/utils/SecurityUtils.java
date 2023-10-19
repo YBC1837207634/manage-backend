@@ -1,8 +1,11 @@
 package com.gong.utils;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Objects;
 
 /**
  * Security 工具类
@@ -14,7 +17,10 @@ public class SecurityUtils {
      * @return
      */
     public static UserDetails getUserDetails() {
-        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (Objects.nonNull(SecurityUtils.getAuthentication())
+                && !(SecurityUtils.getAuthentication() instanceof AnonymousAuthenticationToken))
+            return (UserDetails) getAuthentication().getPrincipal();
+        return null;
     }
 
     /**

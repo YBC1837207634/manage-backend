@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 
-@Service
 public interface ${className}Service {
 
     ${className} getBy${fieldCamel}(${type} ${fieldSmallCamel});

@@ -1,5 +1,7 @@
 package com.gong.controller;
 
+import com.gong.enums.BusinessType;
+import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
 import com.gong.dto.LoginForm;
 import com.gong.dto.SysUserDTO;
@@ -45,9 +47,10 @@ public class LoginController {
     /**
      * /register 注册
      */
+    @Log(title = "注册",businessType = BusinessType.INSERT)
     @PostMapping("/register")
     public Result<String> register(@RequestBody LoginForm from) {
-        if (loginService.register(from) != 0) {
+        if (loginService.register(from)) {
             return Result.success("注册成功！");
         }
         return Result.error(ResponseStatus.WARN,"注册失败");

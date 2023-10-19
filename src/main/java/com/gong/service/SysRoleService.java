@@ -2,12 +2,9 @@ package com.gong.service;
 
 import com.gong.dto.RoleDTO;
 import com.gong.entity.SysRole;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
-@Service
 public interface SysRoleService {
 
     SysRole getById(Long id);

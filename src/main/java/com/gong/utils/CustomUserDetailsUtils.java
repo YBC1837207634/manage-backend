@@ -1,9 +1,11 @@
 package com.gong.utils;
 
 import com.gong.dto.CustomUserDetails;
+import com.gong.dto.SysUserDTO;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.List;
+import java.util.Objects;
 
 /**
  *  UserDetailsUtils
@@ -15,7 +17,11 @@ public class CustomUserDetailsUtils {
      * @return
      */
     public static CustomUserDetails getCustomUserDetails() {
-        return (CustomUserDetails) SecurityUtils.getUserDetails();
+        UserDetails userDetails = SecurityUtils.getUserDetails();
+        if (Objects.nonNull(userDetails)) {
+            return (CustomUserDetails) userDetails;
+        }
+        return new CustomUserDetails();
     }
 
     /**
@@ -33,7 +39,8 @@ public class CustomUserDetailsUtils {
      * @return
      */
     public static Long getId() {
-        return CustomUserDetailsUtils.getCustomUserDetails().getSysUserDTO().getId();
+        CustomUserDetails customUserDetails = CustomUserDetailsUtils.getCustomUserDetails();
+        return customUserDetails.getSysUserDTO().getId();
     }
 
     /**
@@ -43,6 +50,10 @@ public class CustomUserDetailsUtils {
     public static boolean isAdmin() {
         CustomUserDetails userDetails = CustomUserDetailsUtils.getCustomUserDetails();
         return userDetails.isAdmin();
+    }
+
+    public static SysUserDTO getUser() {
+        return CustomUserDetailsUtils.getCustomUserDetails().getSysUserDTO();
     }
 
 }

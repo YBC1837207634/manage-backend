@@ -1,12 +1,10 @@
 package com.gong.service;
 
 import com.gong.entity.SysUserRole;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 
-@Service
 public interface SysUserRoleService {
 
     List<SysUserRole> getList(SysUserRole sysUserRole);

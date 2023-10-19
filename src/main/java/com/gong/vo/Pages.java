@@ -1,5 +1,7 @@
 package com.gong.vo;
 
+import com.github.pagehelper.PageInfo;
+import com.gong.entity.SysOperLog;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +20,10 @@ public class Pages<T> {
     private long pageSize;
     // 分页数据
     private List<T> record;
+
+    public static <T> Pages<T> createPage(List<T> list) {
+        PageInfo<T> pageInfo = new PageInfo<>(list);
+        return new Pages<>(pageInfo.getTotal(), list.size(), pageInfo.getPageNum(), pageInfo.getPageSize(), list);
+    }
+
 }

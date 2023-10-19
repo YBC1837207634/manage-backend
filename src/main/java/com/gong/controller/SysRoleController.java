@@ -1,8 +1,11 @@
 package com.gong.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.gong.enums.BusinessType;
+import com.gong.annotation.Log;
 import com.gong.dto.RoleDTO;
 import com.gong.entity.SysRole;
+import com.gong.exception.CUDException;
 import com.gong.service.SysRoleService;
 import com.gong.vo.Pages;
 import com.gong.vo.Result;
@@ -26,6 +29,7 @@ public class SysRoleController {
      * @return
      */
     @PutMapping
+    @Log(title = "修改角色", businessType = BusinessType.EDIT)
     @PreAuthorize("@s.hasAuthority('system:role:edit')")
     Result<String> update(@RequestBody RoleDTO roleDTO) {
         roleDTO.setUpdateBy(CustomUserDetailsUtils.getId());
@@ -63,6 +67,7 @@ public class SysRoleController {
      * @return
      */
     @PostMapping
+    @Log(title = "添加角色", businessType = BusinessType.INSERT)
     @PreAuthorize("@s.hasAuthority('system:role:add')")
     Result<String> save(@RequestBody RoleDTO role) {
         sysRoleService.saveRoleAndMenu(role);
@@ -75,10 +80,13 @@ public class SysRoleController {
      * @return
      */
     @DeleteMapping("/{ids}")
+    @Log(title = "删除角色", businessType = BusinessType.DELETE)
     @PreAuthorize("@s.hasAuthority('system:role:del')")
     Result<String> remove(@PathVariable("ids") List<Long> ids) {
-        sysRoleService.removeByIds(ids);
-        return Result.success("删除成功");
+        if (sysRoleService.removeByIds(ids) != 0) {
+            return Result.success("删除成功");
+        }
+        throw new CUDException("删除失败，检查条件是否正确");
     }
 
 }

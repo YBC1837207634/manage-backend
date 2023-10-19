@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.gong.dto.RoleDTO;
 import com.gong.entity.SysRole;
 import com.gong.entity.SysRoleMenu;
+import com.gong.entity.SysUser;
 import com.gong.exception.CUDException;
 import com.gong.mapper.SysRoleMapper;
 import com.gong.mapper.SysRoleMenuMapper;
@@ -38,11 +39,13 @@ public class SysRoleServiceImpl implements SysRoleService {
     public List<SysRole> getList(SysRole sysRole) {
         if (Objects.isNull(sysRole))
             sysRole = new SysRole();
-        if (!CustomUserDetailsUtils.getCustomUserDetails().isAdmin())
-            sysRole.setKey("common");
         if (Objects.nonNull(sysRole.getPage()) && Objects.nonNull(sysRole.getPageSize()))
             PageHelper.startPage(sysRole.getPage(), sysRole.getPageSize());
-        return sysRoleMapper.selectList(sysRole);
+        List<SysRole> list = sysRoleMapper.selectList(sysRole);
+        if (!CustomUserDetailsUtils.isAdmin()) {
+            list = list.stream().filter(role -> !role.isAdmin()).toList();
+        }
+        return list;
     }
 
     /**
@@ -81,9 +84,8 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public int updateSysRoleById(SysRole sysRole) {
-        SysRole role = sysRoleMapper.selectById(sysRole.getId());
-        if (role.getKey().equals("admin") && !CustomUserDetailsUtils.isAdmin()) {
-            throw new CUDException("admin角色不可修改！");
+        if (!CustomUserDetailsUtils.isAdmin() && sysRole.isAdmin()) {
+            throw new CUDException("管理员角色不可修改！");
         }
         sysRole.setUpdateBy(CustomUserDetailsUtils.getId());
         sysRole.setUpdateTime(LocalDateTime.now());
@@ -93,6 +95,11 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional
     public int removeByIds(List<Long> ids) {
+        for (Long id : ids) {
+            if (SysRole.isAdmin(id)) {
+                throw new CUDException("管理员用户不可删除！");
+            }
+        }
         int i = sysRoleMapper.deleteByIds(ids);
         if (i != 0) {
             sysRoleMenuMapper.deleteByRoleIds(ids); // 解除于该角色关联的菜单

@@ -1,10 +1,11 @@
 package ${packageName}.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.io.Serial;
+#if(!${isPage})
 import java.io.Serializable;
+#end
 #set($vdateTime="NO")
 #set($vdate="NO")
 #set($vtime="NO")
@@ -37,11 +38,16 @@ import java.sql.Timestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 #end
 
+#if(${isPage})
+@Setter
+@Getter
+public class ${className} extends BaseEntity {
+#else
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ${className} implements Serializable {
-
+#end
     @Serial
     private static final long serialVersionUID = 1L;
 
