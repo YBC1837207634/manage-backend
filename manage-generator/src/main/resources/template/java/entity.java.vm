@@ -1,0 +1,63 @@
+package ${packageName}.entity;
+
+import lombok.*;
+
+import java.io.Serial;
+#if(!${isPage})
+import java.io.Serializable;
+#end
+#set($vdateTime="NO")
+#set($vdate="NO")
+#set($vtime="NO")
+#set($vtimestamp="NO")
+#foreach($meta in $metas)
+#set($typeName=$meta.get("typeName"))
+#if(${typeName.equals("LocalDateTime")})
+#set($vdateTime="YES")
+#elseif(${typeName.equals("LocalDate")})
+#set($vdate="YES")
+#elseif(${typeName.equals("LocalTime")})
+#set($vtime="YES")
+#elseif(${typeName.equals("Timestamp")})
+#set($vtimestamp="YES")
+#end
+#end
+#if($vdateTime.equals("YES"))
+import java.time.LocalDateTime;
+#end
+#if($vdate.equals("YES"))
+import java.time.LocalDate;
+#end
+#if($vtime.equals("YES"))
+import java.time.LocalTime;
+#end
+#if($vtimestamp.equals("YES"))
+import java.sql.Timestamp;
+#end
+#if($vdateTime.equals("YES") || $vdate.equals("YES"))
+import com.fasterxml.jackson.annotation.JsonFormat;
+#end
+
+#if(${isPage})
+@Setter
+@Getter
+public class ${className} extends BaseEntity {
+#else
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ${className} implements Serializable {
+#end
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    #foreach($meta in $metas)
+    /* ${meta.get("remarks")} */
+    #if(${meta.get("typeName").equals("LocalDateTime")})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    #elseif(${meta.get("typeName").equals("LocalDate")})
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    #end
+    private ${meta.get("typeName")} ${meta.get("columnNameCamel")};
+    #end
+}

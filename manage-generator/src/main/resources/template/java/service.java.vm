@@ -1,0 +1,25 @@
+package ${packageName}.service;
+
+import ${packageName}.entity.${className};
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+
+public interface ${className}Service {
+
+    ${className} getBy${fieldCamel}(${type} ${fieldSmallCamel});
+
+    List<${className}> getList(${className} ${classNameSmall});
+
+    int saveOne(${className} ${classNameSmall});
+
+    int saveBatch(List<${className}> ${classNameSmall}s);
+
+    int update${className}By${fieldCamel}(${className} ${classNameSmall});
+
+    int removeBy${fieldCamel}(${type} ${fieldSmallCamel});
+
+    int removeBy${fieldCamel}s(List<${type}> ${fieldSmallCamel}s);
+
+}
