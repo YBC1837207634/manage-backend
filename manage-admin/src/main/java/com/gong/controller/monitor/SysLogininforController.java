@@ -1,9 +1,9 @@
 package com.gong.controller.monitor;
 
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
-import com.gong.entity.SysLogininfor;
-import com.gong.service.SysLogininforService;
+import com.gong.enums.BusinessType;
+import com.gong.system.entity.SysLogininfor;
+import com.gong.system.service.SysLogininforService;
 import com.gong.vo.Pages;
 import com.gong.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;

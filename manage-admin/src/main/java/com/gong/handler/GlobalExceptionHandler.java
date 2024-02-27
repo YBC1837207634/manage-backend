@@ -2,9 +2,9 @@ package com.gong.handler;
 
 import com.gong.common.ResponseStatus;
 import com.gong.exception.CUDException;
+import com.gong.exception.ExistException;
 import com.gong.exception.UnlawfulRequestException;
 import com.gong.vo.Result;
-import com.gong.exception.ExistException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
@@ -102,4 +102,14 @@ public class GlobalExceptionHandler {
         return Result.error(ResponseStatus.BAD_REQUEST, exception.getMessage());
     }
 
+    /**
+     * 系统错误
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(Exception.class)
+    public Result<String> sysError(Exception exception) {
+        log.warn(exception.getMessage());
+        return Result.error(ResponseStatus.WARN, exception.getMessage());
+    }
 }

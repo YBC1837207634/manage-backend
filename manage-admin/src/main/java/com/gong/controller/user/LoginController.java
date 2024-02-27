@@ -1,16 +1,16 @@
 package com.gong.controller.user;
 
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
-import com.gong.dto.LoginForm;
-import com.gong.dto.SysUserDTO;
-import com.gong.service.SysMenuService;
+import com.gong.enums.BusinessType;
+import com.gong.system.entity.dto.LoginForm;
+import com.gong.system.entity.dto.SysUserDTO;
+import com.gong.system.entity.vo.Route;
+import com.gong.system.service.LoginService;
+import com.gong.system.service.SysMenuService;
+import com.gong.system.utils.CustomUserDetailsUtils;
 import com.gong.vo.AuthResult;
 import com.gong.vo.Result;
-import com.gong.vo.Route;
-import com.gong.service.LoginService;
-import com.gong.utils.CustomUserDetailsUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

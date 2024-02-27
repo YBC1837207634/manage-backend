@@ -1,15 +1,15 @@
 package com.gong.controller.user;
 
 import com.github.pagehelper.PageInfo;
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
-import com.gong.dto.RoleDTO;
-import com.gong.entity.SysRole;
+import com.gong.enums.BusinessType;
 import com.gong.exception.CUDException;
-import com.gong.service.SysRoleService;
+import com.gong.system.entity.SysRole;
+import com.gong.system.entity.dto.RoleDTO;
+import com.gong.system.service.SysRoleService;
+import com.gong.system.utils.CustomUserDetailsUtils;
 import com.gong.vo.Pages;
 import com.gong.vo.Result;
-import com.gong.utils.CustomUserDetailsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

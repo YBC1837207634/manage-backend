@@ -1,62 +1,76 @@
 package ${packageName}.controller;
 
-import ${packageName}.vo.Pages;
-import ${packageName}.vo.Result;
-import ${packageName}.entity.${className};
-import ${packageName}.service.${className}Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import com.gong.vo.Pages;
+import com.gong.vo.Result;
+import com.gong.annotation.Log;
+import com.gong.enums.BusinessType;
+import ${packageName}.entity.${ClassName};
+import ${packageName}.service.${ClassName}Service;
 
+/**
+ * ${functionName}Controller
+ *
+ * @author ${author}
+ */
 @RestController
-@RequestMapping("${url}")
-public class ${className}Controller {
-
-    private ${className}Service ${classNameSmall}Service;
+@RequestMapping("/${moduleName}/${businessName}")
+public class ${ClassName}Controller {
 
     @Autowired
-    public ${className}Controller(${className}Service ${classNameSmall}Service) {
-        this.${classNameSmall}Service = ${classNameSmall}Service;
-    }
+    private ${ClassName}Service ${className}Service;
 
     /**
-     * 新增
+     * 新增${functionName}
      */
     @PostMapping
-    Result<String> save(@RequestBody ${className} ${classNameSmall}) {
-        ${classNameSmall}Service.saveOne(${classNameSmall});
+    @PreAuthorize("@s.hasAuthority('${permissionPrefix}:add')")
+    @Log(title = "新增${functionName}", businessType = BusinessType.INSERT)
+    public Result<String> save(@RequestBody ${ClassName} ${className}) {
+        ${className}Service.save${ClassName}(${className});
         return Result.success("添加成功");
     }
 
     /**
-     * 修改
+     * 修改${functionName}
      */
     @PutMapping
-    Result<String> update(@RequestBody ${className} ${classNameSmall}) {
-        ${classNameSmall}Service.update${className}By${fieldCamel}(${classNameSmall});
+    @PreAuthorize("@s.hasAuthority('${permissionPrefix}:edit')")
+    @Log(title = "修改${functionName}", businessType = BusinessType.EDIT)
+    public Result<String> edit(@RequestBody ${ClassName} ${className}) {
+        ${className}Service.update${ClassName}By${pkColumn.getFieldFirstUpper()}(${className});
         return Result.success("更新成功");
     }
 
     /**
-     * 查询
+     * 查询${functionName}
      */
     @GetMapping("/list")
-    Result<List<${className}>> list(${className} ${classNameSmall}) {
-#if(${isPage})
-        List<${className}> list = ${classNameSmall}Service.getList(${classNameSmall});
+    @PreAuthorize("@s.hasAuthority('${permissionPrefix}:list')")
+    public Result<Pages<${ClassName}>> list(${ClassName} ${className}) {
+        List<${ClassName}> list = ${className}Service.get${ClassName}List(${className});
         return Result.success(Pages.createPage(list));
-#else
-        return Result.success(${classNameSmall}Service.getList(${classNameSmall}));
-#end
     }
 
     /**
-     * 删除
+     * 获取${functionName}详细信息
      */
-    @DeleteMapping("/{${fieldSmallCamel}s}")
-    Result<String> remove(@PathVariable List<${type}> ${fieldSmallCamel}s) {
-        ${classNameSmall}Service.removeBy${fieldCamel}s(${fieldSmallCamel}s);
+    @GetMapping("/{${pkColumn.javaField}}")
+    @PreAuthorize("@s.hasAuthority('${permissionPrefix}:query')")
+    public Result<${ClassName}> getInfo(@PathVariable("${pkColumn.javaField}")${pkColumn.javaType} ${pkColumn.javaField}) {
+        return Result.success(${className}Service.getBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaField}));
+    }
+
+    /**
+     * 删除${functionName}
+     */
+    @DeleteMapping("/{${pkColumn.javaField}s}")
+    @PreAuthorize("@s.hasAuthority('${permissionPrefix}:remove')")
+    public Result<String> remove(@RequestParam("${pkColumn.javaField}s") List<${pkColumn.javaType}> ${pkColumn.javaField}s) {
+        ${className}Service.removeBy${pkColumn.getFieldFirstUpper()}s(${pkColumn.javaField}s);
         return Result.success("删除成功");
     }
 }

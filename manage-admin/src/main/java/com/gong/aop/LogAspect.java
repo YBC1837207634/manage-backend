@@ -3,11 +3,10 @@ package com.gong.aop;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.gong.annotation.Log;
-
-import com.gong.dto.SysUserDTO;
-import com.gong.entity.SysOperLog;
-import com.gong.service.SysOperLogService;
-import com.gong.utils.CustomUserDetailsUtils;
+import com.gong.system.entity.SysOperLog;
+import com.gong.system.entity.dto.SysUserDTO;
+import com.gong.system.service.SysOperLogService;
+import com.gong.system.utils.CustomUserDetailsUtils;
 import com.gong.utils.ServletUtils;
 import com.gong.utils.ip.AddressUtils;
 import com.gong.utils.ip.IpUtils;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Map;

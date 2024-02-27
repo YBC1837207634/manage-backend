@@ -1,8 +1,8 @@
 package ${packageName}.service.impl;
 
-import ${packageName}.entity.${className};
-import ${packageName}.mapper.${className}Mapper;
-import ${packageName}.service.${className}Service;
+import ${packageName}.entity.${ClassName};
+import ${packageName}.mapper.${ClassName}Mapper;
+import ${packageName}.service.${ClassName}Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.github.pagehelper.PageHelper;
@@ -11,49 +11,89 @@ import java.util.Objects;
 import java.util.List;
 
 @Service
-public class ${className}ServiceImpl implements ${className}Service {
+public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 
     @Autowired
-    private ${className}Mapper ${classNameSmall}Mapper;
+    private ${ClassName}Mapper ${className}Mapper;
 
+    /**
+     * 查询${functionName}
+     *
+     * @param ${pkColumn.javaField} ${functionName}主键
+     * @return ${functionName}
+     */
     @Override
-    public ${className} getBy${fieldCamel}(Long ${fieldSmallCamel}) {
-        return ${classNameSmall}Mapper.selectBy${fieldCamel}(${fieldSmallCamel});
+    public ${ClassName} getBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaType} ${pkColumn.javaField}) {
+        return ${className}Mapper.selectBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaField});
     }
 
+    /**
+     * 查询${functionName}列表
+     *
+     * @param ${className} 查询条件
+     * @return ${functionName}列表
+     */
     @Override
-    public List<${className}> getList(${className} ${classNameSmall}) {
-#if(${isPage})
-        if (Objects.isNull(${classNameSmall}))
-            ${classNameSmall} = new ${className}();
-        if (Objects.nonNull(${classNameSmall}.getPage()) && Objects.nonNull(${classNameSmall}.getPageSize()))
-            PageHelper.startPage(${classNameSmall}.getPage(), ${classNameSmall}.getPageSize());
-        return ${classNameSmall}Mapper.selectList(${classNameSmall});
-#end
+    public List<${ClassName}> get${ClassName}List(${ClassName} ${className}) {
+        if (Objects.isNull(${className}))
+            ${className} = new ${ClassName}();
+        if (Objects.nonNull(${className}.getPage()) && Objects.nonNull(${className}.getPageSize()))
+            PageHelper.startPage(${className}.getPage(), ${className}.getPageSize());
+        return ${className}Mapper.select${ClassName}List(${className});
     }
 
+    /**
+     * 新增${functionName}
+     *
+     * @param ${className} ${functionName}
+     * @return 结果
+     */
     @Override
-    public int saveOne(${className} ${classNameSmall}) {
-        return ${classNameSmall}Mapper.insertOne(${classNameSmall});
+    public int save${ClassName}(${ClassName} ${className}) {
+        return ${className}Mapper.insert${ClassName}(${className});
     }
 
+    /**
+     * 批量新增${functionName}
+     *
+     * @param ${className}s ${functionName}列表
+     * @return 结果
+     */
     @Override
-    public int saveBatch(List<${className}> ${classNameSmall}) {
-        return ${classNameSmall}Mapper.insertBatch(${classNameSmall});
+    public int save${ClassName}s(List<${ClassName}> ${className}s) {
+        return ${className}Mapper.insert${ClassName}s(${className}s);
     }
 
+    /**
+     * 修改${functionName}
+     *
+     * @param ${className} ${functionName}
+     * @return 结果
+     */
     @Override
-    public int update${className}By${fieldCamel}(${className} ${classNameSmall}) {
-        return ${classNameSmall}Mapper.updateBy${fieldCamel}(${classNameSmall});
+    public int update${ClassName}By${pkColumn.getFieldFirstUpper()}(${ClassName} ${className}) {
+        return ${className}Mapper.updateBy${pkColumn.getFieldFirstUpper()}(${className});
     }
 
+    /**
+     * 删除${functionName}信息
+     *
+     * @param ${pkColumn.javaField} ${functionName}主键
+     * @return 结果
+     */
     @Override
-    public int removeBy${fieldCamel}(${type} ${fieldSmallCamel}) {
-        return ${classNameSmall}Mapper.deleteBy${fieldCamel}(${fieldSmallCamel});
+    public int removeBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaType} ${pkColumn.javaField}) {
+        return ${className}Mapper.deleteBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaField});
     }
 
+    /**
+     * 批量删除${functionName}信息
+     *
+     * @param ${pkColumn.javaField}s ${functionName}主键
+     * @return 结果
+     */
     @Override
-    public int removeBy${fieldCamel}s(List<${type}> ${fieldSmallCamel}s) {
-        return ${classNameSmall}Mapper.deleteBy${fieldCamel}s(${fieldSmallCamel}s);
+    public int removeBy${pkColumn.getFieldFirstUpper()}s(List<${pkColumn.javaType}> ${pkColumn.javaField}s) {
+        return ${className}Mapper.deleteBy${pkColumn.getFieldFirstUpper()}s(${pkColumn.javaField}s);
     }
 }

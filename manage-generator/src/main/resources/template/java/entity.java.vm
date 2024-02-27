@@ -1,17 +1,14 @@
 package ${packageName}.entity;
 
-import lombok.*;
-
-import java.io.Serial;
-#if(!${isPage})
-import java.io.Serializable;
-#end
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import com.gong.entity.BaseEntity;
 #set($vdateTime="NO")
 #set($vdate="NO")
 #set($vtime="NO")
 #set($vtimestamp="NO")
-#foreach($meta in $metas)
-#set($typeName=$meta.get("typeName"))
+#foreach($meta in $columns)
+#set($typeName=${meta.javaType})
 #if(${typeName.equals("LocalDateTime")})
 #set($vdateTime="YES")
 #elseif(${typeName.equals("LocalDate")})
@@ -38,26 +35,41 @@ import java.sql.Timestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 #end
 
-#if(${isPage})
-@Setter
-@Getter
-public class ${className} extends BaseEntity {
-#else
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ${className} implements Serializable {
-#end
-    @Serial
+public class ${ClassName} extends BaseEntity {
+
     private static final long serialVersionUID = 1L;
 
-    #foreach($meta in $metas)
-    /* ${meta.get("remarks")} */
-    #if(${meta.get("typeName").equals("LocalDateTime")})
+    #foreach($meta in $columns)
+    /* ${meta.columnComment} */
+    #if(${meta.javaType.equals("LocalDateTime")})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    #elseif(${meta.get("typeName").equals("LocalDate")})
+    #elseif(${meta.javaType.equals("LocalDate")})
     @JsonFormat(pattern = "yyyy-MM-dd")
     #end
-    private ${meta.get("typeName")} ${meta.get("columnNameCamel")};
+    private ${meta.javaType} ${meta.javaField};
     #end
+
+    #foreach($column in $columns)
+    public ${column.javaType} get${column.getFieldFirstUpper()}() {
+        return ${column.javaField};
+    }
+
+    public void set${column.getFieldFirstUpper()}(${column.javaType} ${column.javaField}) {
+        this.${column.javaField} = ${column.javaField};
+    }
+    #end
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
+#foreach ($column in $columns)
+#if($column.javaField.length() > 2 && $column.javaField.substring(1,2).matches("[A-Z]"))
+#set($AttrName=$column.javaField)
+#else
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#end
+            .append("${column.javaField}", get${AttrName}())
+#end
+            .toString();
+        }
 }

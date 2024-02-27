@@ -26,7 +26,7 @@ public class JWTUtils {
             //签名时间
             Date nowDate = new Date();
             //过期时间Date对象
-            Date expire = new Date(System.currentTimeMillis() + 1000 * 3600);
+            Date expire = new Date(System.currentTimeMillis() + 1000 * 36000);
             String token = JWT.create().
                     //设置头部
                             withHeader(m)

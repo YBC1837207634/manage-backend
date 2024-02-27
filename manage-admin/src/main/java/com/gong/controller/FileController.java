@@ -1,12 +1,12 @@
 package com.gong.controller;
 
 import cn.hutool.crypto.SecureUtil;
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
-import com.gong.entity.FileEntity;
+import com.gong.enums.BusinessType;
+import com.gong.system.entity.FileEntity;
+import com.gong.system.service.FileService;
 import com.gong.vo.Result;
-import com.gong.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

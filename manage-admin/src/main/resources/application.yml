@@ -13,9 +13,9 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
   mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: com.gong.entity
+  type-aliases-package: com.gong.system.entity, com.gong.generator.entity
 
-#pagehelper分页插件配置
+
 pagehelper:
   helperDialect: mysql
   reasonable: true

@@ -1,51 +1,50 @@
 import request from "@/utils/request";
 
 
-// ${viewName}查询
-export function pages(params) {
-    return request.request({
+// 查询${functionName}列表
+export function list${BusinessName}(query) {
+    return request({
+        url: '/${moduleName}/${businessName}/list',
         method: 'get',
-        url: 'system/${varName}/list',
         isToken:true,
-        params
+        params: query
     })
 }
 
-export function get${bigVarName}(id) {
+// 查询${functionName}详细
+export function get${BusinessName}(${pkColumn.javaField}) {
     return request({
+        url: '/${moduleName}/${businessName}/' + ${pkColumn.javaField},
         method: 'get',
-        url: `/system/${varName}/#[[${id}]]#`,
-        isToken: true,
+        isToken:true
     })
 }
 
-// 更新${viewName}
-export function update${bigVarName}(data) {
+// 新增${functionName}
+export function add${BusinessName}(data) {
     return request({
-        method: 'put',
-        url: '/system/${varName}',
-        isToken: true,
-        data
-    })
-}
-
-// 删除${viewName}
-export function remove${bigVarName}(ids) {
-    return request.request({
-        method: 'delete',
-        url: `system/${varName}/#[[${ids}]]#`,
-        isToken:true,
-    })
-}
-
-// 新增用户
-export function save${bigVarName}(data) {
-    return request({
+        url: '/${moduleName}/${businessName}',
         method: 'post',
-        url: 'system/${varName}',
-        isToken: true,
-        data
+        isToken:true,
+        data: data
     })
 }
 
+// 修改${functionName}
+export function update${BusinessName}(data) {
+    return request({
+        url: '/${moduleName}/${businessName}',
+        method: 'put',
+        isToken:true,
+        data: data
+    })
+}
 
+// 删除${functionName}
+export function del${BusinessName}(${pkColumn.javaField}) {
+    return request({
+        url: '/${moduleName}/${businessName}/' + ${pkColumn.javaField},
+        method: 'delete',
+        isToken:true
+    })
+}

@@ -1,14 +1,14 @@
 package com.gong.controller.user;
 
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
 import com.gong.common.ResponseStatus;
+import com.gong.enums.BusinessType;
 import com.gong.exception.CUDException;
-import com.gong.service.SysMenuService;
-import com.gong.vo.MenuItem;
-import com.gong.vo.MenuSelect;
+import com.gong.system.entity.SysMenu;
+import com.gong.system.entity.vo.MenuItem;
+import com.gong.system.entity.vo.MenuSelect;
+import com.gong.system.service.SysMenuService;
 import com.gong.vo.Result;
-import com.gong.entity.SysMenu;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;

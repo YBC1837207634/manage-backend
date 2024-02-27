@@ -1,8 +1,8 @@
 package com.gong.aop;
 
-import com.gong.dto.LoginForm;
-import com.gong.entity.SysLogininfor;
-import com.gong.service.SysLogininforService;
+import com.gong.system.entity.SysLogininfor;
+import com.gong.system.entity.dto.LoginForm;
+import com.gong.system.service.SysLogininforService;
 import com.gong.utils.ServletUtils;
 import com.gong.utils.ip.AddressUtils;
 import com.gong.utils.ip.IpUtils;

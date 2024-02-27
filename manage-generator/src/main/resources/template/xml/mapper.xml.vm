@@ -1,103 +1,120 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="${packageName}.mapper.${className}Mapper">
+<mapper namespace="${packageName}.mapper.${ClassName}Mapper">
 
-    <sql id="${classNameSmall}Columns">
-        SELECT
-        #foreach($colum in $metas)
-        ${colum.get("columnName")}#if(${metas.size()} != $foreach.count),#end
+    <resultMap type="${ClassName}" id="${ClassName}Result">
+        #foreach ($column in $columns)
+            <result property="${column.javaField}"  column="${column.columnName}"/>
         #end
-        from ${tableName}
+    </resultMap>
+
+    <sql id="${className}Columns">
+        SELECT
+        #foreach($colum in $columns)
+        ${colum.columnName}#if(${columns.size()} != $foreach.count),#end
+        #end
+        FROM ${tableName}
     </sql>
 
     <!-- 插入单个 -->
-    <insert id="insertOne" parameterType="${className}">
+    <insert id="insert${ClassName}" parameterType="${ClassName}"#if($pkColumn.increment) useGeneratedKeys="true" keyProperty="$pkColumn.javaField"#end>
         INSERT INTO ${tableName}
-        <trim prefix="(" suffix=")" suffixOverrides=",">#foreach($colum in $metas)#if(${colum.get("isAutoincrement").equals("NO")})
-            <if test="${colum.get("columnNameCamel")} != null">${colum.get("columnName")},</if>## 主键自增不需要插入
-        #end
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        #foreach($column in $columns)
+            #if($column.columnName != $pkColumn.columnName || !$pkColumn.increment)
+            <if test="$column.javaField != null#if($column.javaType == 'String' && $column.isRequired) and $column.javaField != ''#end">$column.columnName,</if>
+            #end
         #end
         </trim>
-        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
-        #foreach($colum in $metas)
-        #if(${colum.get("isAutoincrement").equals("NO")})
-            <if test="${colum.get("columnNameCamel")} != null">#{${colum.get("columnNameCamel")}},</if>
-        #end
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #foreach($column in $columns)
+            #if($column.columnName != $pkColumn.columnName || !$pkColumn.increment)
+            <if test="$column.javaField != null#if($column.javaType == 'String' && $column.isRequired) and $column.javaField != ''#end">#{$column.javaField},</if>
+            #end
         #end
         </trim>
     </insert>
 
     <!-- 插入多个 -->
-    <insert id="insertBatch" parameterType="list">
-        INSERT INTO
-            ${tableName} (
-            <trim suffixOverrides=",">
-            #foreach($colum in $metas)
-            #if(${colum.get("isAutoincrement").equals("NO")} && !${colum.get("def").equals("CURRENT_TIMESTAMP")})
-                ${colum.get("columnName")}#if(${metas.size()} != ${foreach.count}),#end
+    <insert id="insert${ClassName}s" parameterType="${ClassName}">
+        INSERT INTO ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #foreach($colum in $columns)
+            #if($colum.columnName != $pkColumn.columnName || !$pkColumn.increment)
+            ${colum.columnName}#if(${colums.size()} != ${foreach.count}),#end
             #end#end
-            </trim>
-        )
+        </trim>
         VALUES
-            <foreach collection="${classNameSmall}List" item="item" separator="," >
-            (
-            <trim suffixOverrides=",">
-                #foreach($colum in $metas)
-            #if(${colum.get("isAutoincrement").equals("NO")} && !${colum.get("def").equals("CURRENT_TIMESTAMP")})
-                #{item.${colum.get("columnNameCamel")}}#if(${metas.size()} != ${foreach.count}),#end
+        <foreach collection="${className}List" item="item" separator="," open="(" close=")">
+            #foreach($colum in $columns)
+            #if($column.columnName != $pkColumn.columnName || !$pkColumn.increment)
+            #{item.${colum.javaField}}#if(${columns.size()} != ${foreach.count}),#end
             #end#end
-            </trim>
-            )
-            </foreach>
-
+        </foreach>
     </insert>
-    <!--  删除  -->
-    <delete id="deleteBy${fieldCamel}">
-        DELETE FROM ${tableName} WHERE ${field} = #{${fieldSmallCamel}}
-    </delete>
-
-    <!-- 批量删除 -->
-    <delete id="deleteBy${fieldCamel}s">
-        DELETE FROM ${tableName}
-        WHERE ${field}
-        <if test="${fieldSmallCamel}s != null and ${fieldSmallCamel}s > 0">
-            IN
-            <foreach collection="${fieldSmallCamel}s" item="item" separator="," nullable="false" open="(" close=")">
-                #{item}
-            </foreach>
-        </if>
-    </delete>
 
     <!-- 查询-->
-    <select id="selectBy${fieldCamel}" resultType="${className}">
-        <include refid="${classNameSmall}Columns"/>
-        WHERE ${field} = #{${fieldSmallCamel}}
+    <select id="selectBy${pkColumn.getFieldFirstUpper()}" resultMap="${ClassName}Result">
+        <include refid="${className}Columns"/> WHERE ${pkColumn.columnName} = #{${pkColumn.javaField}}
     </select>
 
     <!-- 列表查询 -->
-    <select id="selectList"  resultType="${className}">
-        <include refid="${classNameSmall}Columns"/>
-    <where>
-    #foreach($column in $metas)
-        <if test="${column.get("columnNameCamel")} != null">
-            ${column.get("columnName")} = #{${column.get("columnNameCamel")}}
-        </if>
-    #end
-    </where>
+    <select id="select${ClassName}List" resultType="${className}" resultMap="${ClassName}Result">
+        <include refid="${className}Columns"/>
+        <where>
+#foreach($column in $columns)
+#set($queryType=$column.queryType)
+#set($javaField=$column.javaField)
+#set($javaType=$column.javaType)
+#set($columnName=$column.columnName)
+#set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#if($column.query)
+#if($column.queryType == "EQ")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName = #{$javaField}</if>
+#elseif($queryType == "NE")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName != #{$javaField}</if>
+#elseif($queryType == "GT")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName &gt; #{$javaField}</if>
+#elseif($queryType == "GTE")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName &gt;= #{$javaField}</if>
+#elseif($queryType == "LT")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName &lt; #{$javaField}</if>
+#elseif($queryType == "LTE")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName &lt;= #{$javaField}</if>
+#elseif($queryType == "LIKE")
+            <if test="$javaField != null #if($javaType == 'String' ) and $javaField.trim() != ''#end"> and $columnName like concat('%', #{$javaField}, '%')</if>
+#elseif($queryType == "BETWEEN")
+            <if test="params.begin$AttrName != null and params.begin$AttrName != '' and params.end$AttrName != null and params.end$AttrName != ''"> and $columnName between #{params.begin$AttrName} and #{params.end$AttrName}</if>
+#end
+#end
+#end
+        </where>
     </select>
 
     <!-- 更新 -->
-    <update id="updateBy${fieldCamel}" parameterType="${className}">
+    <update id="updateBy${pkColumn.getFieldFirstUpper()}" parameterType="${ClassName}">
         UPDATE ${tableName}
-        <set>
-    #foreach($column in $metas)
-        #if(!${column.get("isAutoincrement").equals("YES")} && !${column.get("columnName").equals(${field})} &&
-        !($column.get("columnName").equals("create_time")||$column.get("columnName").equals("createtime")))
-            <if test="${column.get("columnNameCamel")} != null">${column.get("columnName")} = #{${column.get("columnNameCamel")}},</if>
+        <trim prefix="SET" suffixOverrides=",">
+        #foreach($column in $columns)
+        #if($column.columnName != $pkColumn.columnName)
+            <if test="$column.javaField != null#if($column.javaType == 'String' && $column.required) and $column.javaField != ''#end">$column.columnName = #{$column.javaField},</if>
         #end
-    #end
-        </set>
-        WHERE ${field} = #{${fieldSmallCamel}}
+        #end
+        </trim>
+        where ${pkColumn.columnName} = #{${pkColumn.javaField}}
     </update>
+
+    <!--  删除  -->
+    <delete id="deleteBy${pkColumn.getFieldFirstUpper()}" parameterType="${pkColumn.javaType}">
+        DELETE FROM ${tableName} WHERE ${pkColumn.columnName} = #{${pkColumn.javaField}}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="deleteBy${pkColumn.getFieldFirstUpper()}s" parameterType="${pkColumn.javaType}">
+        DELETE FROM ${tableName} WHERE ${pkColumn.javaField} IN
+        <foreach collection="${pkColumn.javaField}s" item="item" separator="," nullable="false" open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
 </mapper>

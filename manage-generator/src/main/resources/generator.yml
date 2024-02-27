@@ -1,0 +1,4 @@
+gen:
+  # 默认包路径
+  packageName: com.gong.system
+

@@ -1,11 +1,11 @@
 package com.gong.controller.monitor;
 
-import com.gong.enums.BusinessType;
 import com.gong.annotation.Log;
+import com.gong.enums.BusinessType;
+import com.gong.system.entity.SysOperLog;
+import com.gong.system.service.SysOperLogService;
 import com.gong.vo.Pages;
 import com.gong.vo.Result;
-import com.gong.entity.SysOperLog;
-import com.gong.service.SysOperLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,24 +1,23 @@
 package ${packageName}.mapper;
 
-import ${packageName}.entity.${className};
+import ${packageName}.entity.${ClassName};
 import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
 
 @Mapper
-public interface ${className}Mapper {
+public interface ${ClassName}Mapper {
 
-    int insertBatch(List<${className}> ${classNameSmall}List);
+    int insert${ClassName}s(List<${ClassName}> ${className}List);
 
-    int insertOne(${className} ${classNameSmall});
+    int insert${ClassName}(${ClassName} ${className});
 
-    int deleteBy${fieldCamel}(${type} ${fieldSmallCamel});
+    int deleteBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaType} ${pkColumn.javaField});
 
-    int deleteBy${fieldCamel}s(List<${type}> ${fieldSmallCamel}s);
+    int deleteBy${pkColumn.getFieldFirstUpper()}s(List<${pkColumn.javaType}> ${pkColumn.javaField}s);
 
-    ${className} selectBy${fieldCamel}(${type} ${fieldSmallCamel});
+    ${ClassName} selectBy${pkColumn.getFieldFirstUpper()}(${pkColumn.javaType} ${pkColumn.javaField});
 
-    List<${className}> selectList(${className} ${classNameSmall});
+    List<${ClassName}> select${ClassName}List(${ClassName} ${className});
 
-    int updateBy${fieldCamel}(${className} ${classNameSmall});
+    int updateBy${pkColumn.getFieldFirstUpper()}(${ClassName} ${className});
 }

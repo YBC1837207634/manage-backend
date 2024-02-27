@@ -1,14 +1,14 @@
 package com.gong.filter;
 
 import com.auth0.jwt.interfaces.Claim;
-import com.gong.dto.SysUserDTO;
-import com.gong.dto.CustomUserDetails;
-import com.gong.entity.SysRole;
-import com.gong.entity.SysUser;
 import com.gong.exception.TokenException;
 import com.gong.handler.TokenExceptionHandler;
-import com.gong.service.SysUserService;
-import com.gong.utils.CustomUserDetailsUtils;
+import com.gong.system.entity.SysRole;
+import com.gong.system.entity.SysUser;
+import com.gong.system.entity.dto.CustomUserDetails;
+import com.gong.system.entity.dto.SysUserDTO;
+import com.gong.system.service.SysUserService;
+import com.gong.system.utils.CustomUserDetailsUtils;
 import com.gong.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

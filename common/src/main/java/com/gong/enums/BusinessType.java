@@ -15,6 +15,8 @@ public enum BusinessType {
     EDIT,
 
     /* 删除 */
-    DELETE
+    DELETE,
 
+    /* 代码生成 */
+    GEN_CODE
 }
