@@ -50,6 +50,9 @@ public class SysMenu implements Serializable {
     /* 0 不缓存组件 1 缓存 */
     private Integer cache;
 
+    /* 路由参数 */
+    private String params;
+
     /* 状态 */
     private Integer status;
 
@@ -244,6 +247,14 @@ public class SysMenu implements Serializable {
         this.updateTime = updateTime;
     }
 
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
+
     @Override
     public String toString() {
         return "SysMenu{" +
@@ -257,6 +268,7 @@ public class SysMenu implements Serializable {
                 ", aside=" + aside +
                 ", menuType='" + menuType + '\'' +
                 ", cache=" + cache +
+                ", params='" + params + '\'' +
                 ", status=" + status +
                 ", purview='" + purview + '\'' +
                 ", remark='" + remark + '\'' +

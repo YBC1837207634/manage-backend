@@ -15,6 +15,7 @@
         menu_type,
         `cache`,
         `status`,
+        params,
         purview,
         remark,
         order_menu,
@@ -39,6 +40,7 @@
             <if test="menuType != null">menu_type,</if>
             <if test="cache != null">cache,</if>
             <if test="status != null">status,</if>
+            <if test="params != null">params,</if>
             <if test="purview != null">purview,</if>
             <if test="remark != null">remark,</if>
             <if test="orderMenu != null">order_menu,</if>
@@ -58,6 +60,7 @@
             <if test="menuType != null">#{menuType},</if>
             <if test="cache != null">#{cache},</if>
             <if test="status != null">#{status},</if>
+            <if test="params != null">params,</if>
             <if test="purview != null">#{purview},</if>
             <if test="remark != null">#{remark},</if>
             <if test="orderMenu != null">#{orderMenu},</if>
@@ -83,6 +86,7 @@
                 menu_type,
                 cache,
                 status,
+                params,
                 purview,
                 remark,
                 order_menu,
@@ -104,6 +108,7 @@
                 #{item.menuType},
                 #{item.cache},
                 #{item.status},
+                #{item.params},
                 #{item.purview},
                 #{item.remark},
                 #{item.orderMenu},
@@ -169,6 +174,9 @@
         <if test="cache != null">
             cache = #{cache}
         </if>
+        <if test="params != null">
+            cache = #{params}
+        </if>
         <if test="status != null">
             status = #{status}
         </if>
@@ -210,6 +218,7 @@
             <if test="menuType != null">menu_type = #{menuType},</if>
             <if test="cache != null">cache = #{cache},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="params != null">params = #{params},</if>
             <if test="purview != null">purview = #{purview},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="orderMenu != null">order_menu = #{orderMenu},</if>
