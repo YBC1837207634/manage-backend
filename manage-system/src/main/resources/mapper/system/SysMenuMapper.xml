@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.gong.system.mapper.SysMenuMapper">
+<mapper namespace="com.gong.manage.system.mapper.SysMenuMapper">
 
     <sql id="sysMenuColumns">
         SELECT
@@ -230,7 +230,7 @@
     </update>
 
     <!-- 根据用户id查询对应的菜单列表 -->
-    <select id="selectMenuByUserIdAndType" resultType="com.gong.system.entity.SysMenu">
+    <select id="selectMenuByUserIdAndType" resultType="com.gong.manage.system.entity.SysMenu">
         <include refid="sysMenuColumns"></include>
         <where>
             <if test="id != null">
@@ -269,7 +269,7 @@
                     JOIN sys_role_menu srm ON sr.id = srm.role_id
             WHERE
                 sr.id = #{roleId}
-#               AND sr.`status` = 1
+              AND sr.`status` = 1
             )
           AND `status` = 1
     </select>

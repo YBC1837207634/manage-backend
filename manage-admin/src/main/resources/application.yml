@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
+    password: wh4545
     url: jdbc:mysql://localhost:3306/manage
   servlet:
     multipart:
@@ -13,7 +13,7 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
   mapper-locations: classpath*:/mapper/**/*.xml
-  type-aliases-package: com.gong.system.entity, com.gong.generator.entity
+  type-aliases-package: com.gong.manage.system.entity, com.gong.manage.generator.entity
 
 
 pagehelper:

@@ -33,7 +33,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>common</module>
+        <module>manage-common</module>
         <module>manage-admin</module>
         <module>manage-system</module>
         <module>manage-generator</module>
@@ -43,7 +43,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.gong</groupId>
-                <artifactId>common</artifactId>
+                <artifactId>manage-common</artifactId>
                 <version>${manage-project.version}</version>
             </dependency>
             <dependency>
@@ -54,6 +54,11 @@
             <dependency>
                 <groupId>com.gong</groupId>
                 <artifactId>manage-generator</artifactId>
+                <version>${manage-project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.gong</groupId>
+                <artifactId>manage-admin</artifactId>
                 <version>${manage-project.version}</version>
             </dependency>
             <!-- mybatis -->

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gong.generator.mapper.GenTableMapper">
+<mapper namespace="com.gong.manage.generator.mapper.GenTableMapper">
     
     <sql id="TableColumns">
         table_name,
@@ -16,7 +16,7 @@
     </sql>
 
     <!--  information_schema 查询表信息列表  -->
-   <select id="selectTableList" resultType="com.gong.generator.entity.GenTable" parameterType="com.gong.generator.entity.GenTable">
+   <select id="selectTableList" resultType="com.gong.manage.generator.entity.GenTable" parameterType="com.gong.manage.generator.entity.GenTable">
        SELECT
        <include refid="TableColumns" />
        FROM
@@ -35,7 +35,7 @@
    </select>
 
     <!--  information_schema 通过表名查找  -->
-    <select id="selectTableByTableName" resultType="com.gong.generator.entity.GenTable">
+    <select id="selectTableByTableName" resultType="com.gong.manage.generator.entity.GenTable">
         SELECT
         <include refid="TableColumns" />
         FROM
@@ -46,7 +46,7 @@
     </select>
 
     <!--  information_schema 通过表名查找  -->
-    <select id="selectTableByTableNames" resultType="com.gong.generator.entity.GenTable" parameterType="list">
+    <select id="selectTableByTableNames" resultType="com.gong.manage.generator.entity.GenTable" parameterType="list">
         SELECT
         <include refid="TableColumns" />
         FROM
@@ -60,7 +60,7 @@
     </select>
 
     <!-- 从表中查询所有导入的表信息 -->
-    <select id="selectGenTableList" resultType="com.gong.generator.entity.GenTable" parameterType="com.gong.generator.entity.GenTable">
+    <select id="selectGenTableList" resultType="com.gong.manage.generator.entity.GenTable" parameterType="com.gong.manage.generator.entity.GenTable">
         <include refid="selectGenTableVo"/>
         <where>
             <if test="tableName != null and tableName != ''">
@@ -78,7 +78,7 @@
         </where>
     </select>
 
-    <select id="selectGenTableByTableId" resultType="com.gong.generator.entity.GenTable">
+    <select id="selectGenTableByTableId" resultType="com.gong.manage.generator.entity.GenTable">
         <include refid="selectGenTableVo" />
         where table_id = #{tableId}
     </select>

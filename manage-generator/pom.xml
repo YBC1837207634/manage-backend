@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.gong</groupId>
-            <artifactId>common</artifactId>
+            <artifactId>manage-common</artifactId>
         </dependency>
         <dependency>
             <groupId>com.gong</groupId>

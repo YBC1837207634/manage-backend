@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import com.gong.vo.Pages;
-import com.gong.vo.Result;
-import com.gong.annotation.Log;
-import com.gong.enums.BusinessType;
+import com.gong.manage.common.result.Pages;
+import com.gong.manage.common.result.Result;
+import com.gong.manage.common.annotation.Log;
+import com.gong.manage.common.enums.BusinessType;
 import ${packageName}.entity.${ClassName};
 import ${packageName}.service.${ClassName}Service;
 
